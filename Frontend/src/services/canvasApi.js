@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api', timeout: 35000 });
+const BASE = import.meta.env.VITE_API_URL || 'https://fynmanai-backend.onrender.com';
+const api = axios.create({ baseURL: `${BASE}/api`, timeout: 35000 });
 
 // ── Canvas generation ──────────────────────────────────────
 export async function generateTimeline(prompt, conversationHistory = []) {
