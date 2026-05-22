@@ -1,0 +1,317 @@
+/* ============================================================
+   Landing Page — inherits CSS variables from App.css / index.css
+   ============================================================ */
+
+.landing-root {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg, #0f0f11);
+  color: var(--text, #e2e2e8);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Animated background orbs ── */
+.landing-mesh {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.mesh-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.18;
+  animation: orbFloat 14s ease-in-out infinite alternate;
+}
+
+.mesh-orb--1 {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, #7c6af7, transparent 70%);
+  top: -200px;
+  left: -200px;
+  animation-duration: 16s;
+}
+
+.mesh-orb--2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #a78bfa, transparent 70%);
+  top: 40%;
+  right: -150px;
+  animation-duration: 20s;
+  animation-delay: -6s;
+}
+
+.mesh-orb--3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #4ade80, transparent 70%);
+  bottom: 10%;
+  left: 30%;
+  animation-duration: 18s;
+  animation-delay: -10s;
+  opacity: 0.1;
+}
+
+@keyframes orbFloat {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(40px, 30px) scale(1.08); }
+}
+
+/* ── Navbar ── */
+.landing-nav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 56px;
+  z-index: 100;
+  background: rgba(15, 15, 17, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(42, 42, 50, 0.6);
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+.landing-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-brand-icon {
+  font-size: 20px;
+  color: var(--accent, #7c6af7);
+}
+
+.nav-brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.nav-brand-tag {
+  font-size: 10px;
+  color: var(--text-muted, #8888a0);
+  padding: 2px 7px;
+  border: 1px solid var(--border, #2a2a32);
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.nav-signin-btn {
+  background: transparent;
+  border: 1px solid var(--border, #2a2a32);
+  color: var(--text, #e2e2e8);
+  padding: 6px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: inherit;
+}
+
+.nav-signin-btn:hover {
+  border-color: var(--accent, #7c6af7);
+  background: rgba(124, 106, 247, 0.08);
+}
+
+/* ── Hero ── */
+.landing-hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 100px 24px 80px;
+  max-width: 760px;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent2, #a78bfa);
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
+.hero-headline {
+  font-size: clamp(48px, 8vw, 88px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+  color: var(--text, #e2e2e8);
+}
+
+.hero-headline-accent {
+  background: linear-gradient(135deg, #7c6af7 0%, #a78bfa 50%, #4ade80 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-muted, #8888a0);
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent, #7c6af7);
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  font-family: inherit;
+  box-shadow: 0 0 32px rgba(124, 106, 247, 0.35);
+}
+
+.hero-cta:hover {
+  background: var(--accent2, #a78bfa);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 40px rgba(124, 106, 247, 0.55);
+}
+
+.hero-cta--sm {
+  font-size: 15px;
+  padding: 12px 28px;
+}
+
+.hero-cta-arrow {
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.hero-cta:hover .hero-cta-arrow {
+  transform: translateX(4px);
+}
+
+.hero-note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--text-muted, #8888a0);
+}
+
+/* ── Features ── */
+.landing-features {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1000px;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.features-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 48px;
+  color: var(--text, #e2e2e8);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--surface, #17171a);
+  border: 1px solid var(--border, #2a2a32);
+  border-radius: 16px;
+  padding: 32px 24px;
+  text-align: left;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.feature-card:hover {
+  border-color: var(--accent, #7c6af7);
+  transform: translateY(-3px);
+}
+
+.feature-icon {
+  display: block;
+  font-size: 28px;
+  margin-bottom: 16px;
+  color: var(--accent, #7c6af7);
+}
+
+.feature-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text, #e2e2e8);
+}
+
+.feature-body {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted, #8888a0);
+}
+
+/* ── Footer CTA band ── */
+.landing-footer-cta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 60px 24px;
+  width: 100%;
+  max-width: 700px;
+  text-align: center;
+}
+
+.footer-cta-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text, #e2e2e8);
+}
+
+/* ── Footer FlowSection — remove inner card padding so footer controls its own layout ── */
+[data-flow-section].footer-section > [data-flow-inner] {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+/* ── Footer ── */
+.landing-footer {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-align: center;
+  padding: 20px 24px;
+  font-size: 12px;
+  color: var(--text-muted, #8888a0);
+  border-top: 1px solid var(--border, #2a2a32);
+}
