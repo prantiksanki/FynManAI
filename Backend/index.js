@@ -16,7 +16,13 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:4173'] }));
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://localhost:4173',
+  'https://fynmanai.onrender.com',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use('/tts-audio', express.static(path.join(__dirname, 'public', 'tts-audio')));
 
