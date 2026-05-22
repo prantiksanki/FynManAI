@@ -102,7 +102,14 @@ export default function Dashboard() {
     const text = (promptText || prompt).trim();
     if (!text) return;
     const title = text.length > 48 ? text.slice(0, 48).trimEnd() + '…' : text;
-    const { sessionId } = await createSessionApi(user.sub, title);
+    let sessionId;
+    try {
+      const res = await createSessionApi(user.sub, title);
+      sessionId = res?.sessionId;
+    } catch (err) {
+      console.error('[Dashboard] createSession failed:', err);
+    }
+    if (!sessionId) return;
     navigate(`/canvas?session=${sessionId}`, { state: { initialPrompt: text } });
   }
 
