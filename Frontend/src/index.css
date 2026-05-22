@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@keyframes fade-in {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@theme {
+  --animate-fade-in: fade-in 0.7s ease forwards;
+  --animate-fade-up: fade-up 0.9s ease forwards;
+  --color-background: #0f0f11;
+  --color-foreground: #e2e2e8;
+  --color-primary: #7c6af7;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #17171a;
+  --color-secondary-foreground: #e2e2e8;
+  --color-muted: #17171a;
+  --color-muted-foreground: #8888a0;
+  --color-accent: #2a2a32;
+  --color-accent-foreground: #e2e2e8;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #2a2a32;
+  --color-input: #2a2a32;
+  --color-ring: #7c6af7;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background: #0f0f11;
+  color: #e2e2e8;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+/* Canvas route needs full-screen no-scroll */
+.canvas-root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
