@@ -22,7 +22,14 @@ const ALLOWED_ORIGINS = [
   'https://fynmanai.onrender.com',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
-app.use(cors({ origin: ALLOWED_ORIGINS }));
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return cb(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS blocked: ${origin}`));
+  },
+}));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use('/tts-audio', express.static(path.join(__dirname, 'public', 'tts-audio')));
 
