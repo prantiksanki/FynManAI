@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// In production VITE_API_URL is set to the backend Render URL (baked in at build time by Vite).
+// In local dev it is empty/undefined, so relative /api is used (Vite proxy forwards to localhost:3000).
 const BASE = import.meta.env.VITE_API_URL || 'https://fynmanai-backend.onrender.com';
 const api = axios.create({ baseURL: `${BASE}/api`, timeout: 35000 });
 
