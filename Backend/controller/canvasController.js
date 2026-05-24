@@ -436,7 +436,7 @@ async function generateCanvasTimeline(req, res) {
         headers: {
           Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'http://localhost:5173',
+          'HTTP-Referer': process.env.FRONTEND_URL || 'https://fynmanai.onrender.com',
           'X-Title': 'Agentic Visual Canvas',
         },
         timeout: 30000,
