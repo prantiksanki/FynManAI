@@ -109,8 +109,8 @@ export default function Dashboard() {
     } catch (err) {
       console.error('[Dashboard] createSession failed:', err);
     }
-    if (!sessionId) return;
-    navigate(`/canvas?session=${sessionId}`, { state: { initialPrompt: text } });
+    // Navigate even if session creation failed — canvas works without a session (no persistence)
+    navigate(`/canvas?session=${sessionId || 'new'}`, { state: { initialPrompt: text } });
   }
 
   function handleKeyDown(e) {
