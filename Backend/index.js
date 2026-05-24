@@ -16,6 +16,13 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// ── Startup env audit (visible in Render logs) ────────────────────────────────
+console.log('[FinAI] Env check:',
+  'OPENROUTER_API_KEY:', process.env.OPENROUTER_API_KEY ? '✓ set' : '✗ MISSING',
+  '| MONGODB_URI:', process.env.MONGODB_URI ? '✓ set' : '✗ not set (sessions disabled)',
+  '| FRONTEND_URL:', process.env.FRONTEND_URL || '(using hardcoded default)',
+);
+
 const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:4173',
@@ -56,16 +63,32 @@ app.delete('/api/sessions/:sessionId',             deleteSession);
 app.use(notFound);
 app.use(errorHandler);
 
-// Connect to MongoDB then start server
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/finai';
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('[FinAI] MongoDB connected');
-    app.listen(port, () => {
-      console.log(`[FinAI] Server running on http://localhost:${port}`);
-    });
-  })
-  .catch(err => {
-    console.error('[FinAI] MongoDB connection failed:', err.message);
-    process.exit(1);
+// ── Startup: connect MongoDB then start server ────────────────────────────────
+// Canvas generation (/api/canvas/generate) and image fetch (/api/image/fetch)
+// do NOT need MongoDB — they work purely with OpenRouter + image APIs.
+// If MONGODB_URI is not configured (e.g. Render free tier without Atlas),
+// the server starts anyway; only session CRUD endpoints will be unavailable.
+const MONGO_URI = process.env.MONGODB_URI;
+
+function startServer() {
+  app.listen(port, () => {
+    console.log(`[FinAI] Server running on port ${port}`);
   });
+}
+
+if (!MONGO_URI || MONGO_URI === 'mongodb://localhost:27017/finai') {
+  console.warn('[FinAI] WARNING: MONGODB_URI not set or is localhost — session persistence disabled.');
+  console.warn('[FinAI] Set MONGODB_URI in Render environment variables to enable sessions.');
+  startServer();
+} else {
+  mongoose.connect(MONGO_URI)
+    .then(() => {
+      console.log('[FinAI] MongoDB connected');
+      startServer();
+    })
+    .catch(err => {
+      console.error('[FinAI] MongoDB connection failed:', err.message);
+      console.warn('[FinAI] Starting server without MongoDB — session endpoints will fail.');
+      startServer();
+    });
+}
