@@ -13,7 +13,7 @@ export function useTimelineOrchestrator(editorRef, onVoice) {
     abortRef.current = true;
   }, []);
 
-  const runTimeline = useCallback(async (actions) => {
+  const runTimeline = useCallback((actions) => {
     clearTimers();
     abortRef.current = false;
     setIsPlaying(true);
@@ -27,27 +27,42 @@ export function useTimelineOrchestrator(editorRef, onVoice) {
     });
     setProgress({ current: 0, total: timeline.length });
 
-    timeline.forEach((action, idx) => {
-      const timer = setTimeout(async () => {
-        if (abortRef.current) return;
+    // Return a real Promise that resolves only when the last action fires,
+    // so callers can properly `await runTimeline(...)` in sequence.
+    return new Promise((resolve) => {
+      if (!timeline.length) {
+        setIsPlaying(false);
+        resolve();
+        return;
+      }
 
-        const editor = editorRef.current;
-        if (!editor) return;
+      timeline.forEach((action, idx) => {
+        const timer = setTimeout(async () => {
+          // On abort, still resolve so the awaiting caller isn't left hanging
+          if (abortRef.current) {
+            if (idx === timeline.length - 1) resolve();
+            return;
+          }
 
-        try {
-          await executeAction(editor, action, onVoice);
-        } catch (err) {
-          console.error('[Timeline] Action failed:', action.action, err);
-        }
+          const editor = editorRef.current;
+          if (editor) {
+            try {
+              await executeAction(editor, action, onVoice);
+            } catch (err) {
+              console.error('[Timeline] Action failed:', action.action, err);
+            }
+          }
 
-        setProgress(p => ({ ...p, current: idx + 1 }));
+          setProgress(p => ({ ...p, current: idx + 1 }));
 
-        if (idx === timeline.length - 1) {
-          setIsPlaying(false);
-        }
-      }, action._ms);
+          if (idx === timeline.length - 1) {
+            setIsPlaying(false);
+            resolve();
+          }
+        }, action._ms);
 
-      timersRef.current.push(timer);
+        timersRef.current.push(timer);
+      });
     });
   }, [editorRef, onVoice, clearTimers]);
 
