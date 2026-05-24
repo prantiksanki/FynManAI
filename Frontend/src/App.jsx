@@ -119,7 +119,7 @@ function CanvasGlow() {
       ref={canvasRef}
       style={{
         position: 'absolute', inset: 0,
-        pointerEvents: 'none', zIndex: 2,
+        pointerEvents: 'none', zIndex: 0,
       }}
     />
   );
@@ -327,14 +327,12 @@ export default function App() {
       } else if (data.prompts?.length) {
         // Restore chat immediately so the sidebar shows history during replay
         restoreChatMessages(data.prompts);
-        // Replay the timeline actions sequentially (now truly async with the fixed runTimeline)
-        replaySession(data.prompts).then(() => {
-          // Save a snapshot after the first replay so future loads are instant (no replay needed)
-          if (sessionId && sessionId !== 'new') {
-            shouldSnapshotRef.current = true;
-            setIsPlaying(false); // trigger the isPlaying→false effect that saves the snapshot
-          }
-        });
+        // Flag snapshot BEFORE replay so the isPlaying→false useEffect picks it up
+        if (sessionId && sessionId !== 'new') {
+          shouldSnapshotRef.current = true;
+        }
+        // Replay the timeline actions sequentially; save snapshot when isPlaying→false fires
+        replaySession(data.prompts).catch(() => {});
       }
     }).catch(() => {});
   }, [sessionId, editorReady, replaySession, restoreChatMessages]);
