@@ -82,7 +82,7 @@ export function ContainerScroll({ titleComponent, children }) {
               paddingLeft: '10px',
             }}>
               <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
-                app.finai.ai/canvas
+                app.fynmanai.ai/canvas
               </span>
             </div>
           </div>

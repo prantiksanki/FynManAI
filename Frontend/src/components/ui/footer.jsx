@@ -10,32 +10,32 @@ if (typeof window !== 'undefined') {
 const STYLES = `
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
-.finai-footer-wrap {
+.fynmanai-footer-wrap {
   font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-@keyframes finai-breathe {
+@keyframes fynmanai-breathe {
   0%   { transform: translate(-50%,-50%) scale(1);   opacity: 0.5; }
   100% { transform: translate(-50%,-50%) scale(1.15); opacity: 0.9; }
 }
 
-@keyframes finai-marquee {
+@keyframes fynmanai-marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
 
-@keyframes finai-heartbeat {
+@keyframes fynmanai-heartbeat {
   0%,100% { transform: scale(1);   filter: drop-shadow(0 0 5px rgba(239,68,68,0.5)); }
   15%,45% { transform: scale(1.2); filter: drop-shadow(0 0 10px rgba(239,68,68,0.8)); }
   30%     { transform: scale(1); }
 }
 
-.finai-breathe   { animation: finai-breathe  8s  ease-in-out infinite alternate; }
-.finai-marquee   { animation: finai-marquee  40s linear      infinite; }
-.finai-heartbeat { animation: finai-heartbeat 2s cubic-bezier(0.25,1,0.5,1) infinite; }
+.fynmanai-breathe   { animation: fynmanai-breathe  8s  ease-in-out infinite alternate; }
+.fynmanai-marquee   { animation: fynmanai-marquee  40s linear      infinite; }
+.fynmanai-heartbeat { animation: fynmanai-heartbeat 2s cubic-bezier(0.25,1,0.5,1) infinite; }
 
-.finai-bg-grid {
+.fynmanai-bg-grid {
   background-size: 60px 60px;
   background-image:
     linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
@@ -44,7 +44,7 @@ const STYLES = `
   -webkit-mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
 }
 
-.finai-glass-pill {
+.fynmanai-glass-pill {
   background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
   box-shadow:
     0 10px 30px -10px rgba(0,0,0,0.5),
@@ -57,7 +57,7 @@ const STYLES = `
   cursor: pointer;
 }
 
-.finai-glass-pill:hover {
+.fynmanai-glass-pill:hover {
   background: linear-gradient(145deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 100%);
   border-color: rgba(255,255,255,0.22);
   box-shadow:
@@ -66,7 +66,7 @@ const STYLES = `
   color: #ffffff;
 }
 
-.finai-giant-text {
+.fynmanai-giant-text {
   font-size: clamp(180px, 38vw, 680px);
   line-height: 0.82;
   font-weight: 900;
@@ -238,7 +238,7 @@ export function Footer({ onGetStarted }) {
 
       <footer
         ref={wrapperRef}
-        className="finai-footer-wrap"
+        className="fynmanai-footer-wrap"
         style={{
           position: 'relative',
           width: '100%',
@@ -252,7 +252,7 @@ export function Footer({ onGetStarted }) {
       >
         {/* Aurora glow — monochrome silver */}
         <div
-          className="finai-breathe"
+          className="fynmanai-breathe"
           style={{
             position: 'absolute',
             left: '50%', top: '50%',
@@ -267,14 +267,14 @@ export function Footer({ onGetStarted }) {
 
         {/* Grid background */}
         <div
-          className="finai-bg-grid"
+          className="fynmanai-bg-grid"
           style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}
         />
 
-        {/* Giant ghost FINAI text */}
+        {/* Giant ghost FYNMANAI text */}
         <div
           ref={giantTextRef}
-          className="finai-giant-text"
+          className="fynmanai-giant-text"
           style={{
             position: 'absolute',
             bottom: '-8vh',
@@ -284,7 +284,7 @@ export function Footer({ onGetStarted }) {
             width: 'max-content',
           }}
         >
-          FINAI
+          FYNMANAI
         </div>
 
         {/* ── Top marquee strip ── */}
@@ -300,7 +300,7 @@ export function Footer({ onGetStarted }) {
           }}
         >
           <div
-            className="finai-marquee"
+            className="fynmanai-marquee"
             style={{
               display: 'flex',
               width: 'max-content',
@@ -384,7 +384,7 @@ export function Footer({ onGetStarted }) {
               margin: '24px auto 0',
               lineHeight: 1.6,
             }}>
-              Type a prompt. FinAI builds a live visual canvas — charts, flows, timelines — all in under 3 seconds.
+              Type a prompt. FynmanAI builds a live visual canvas — charts, flows, timelines — all in under 3 seconds.
             </p>
           </div>
 
@@ -428,7 +428,7 @@ export function Footer({ onGetStarted }) {
               <MagneticButton
                 as="a"
                 href="#"
-                className="finai-glass-pill"
+                className="fynmanai-glass-pill"
                 style={{
                   padding: '18px 40px',
                   borderRadius: '999px',
@@ -458,7 +458,7 @@ export function Footer({ onGetStarted }) {
                   key={label}
                   as="a"
                   href="#"
-                  className="finai-glass-pill"
+                  className="fynmanai-glass-pill"
                   style={{
                     padding: '10px 22px',
                     borderRadius: '999px',
@@ -500,12 +500,12 @@ export function Footer({ onGetStarted }) {
             textTransform: 'uppercase',
             color: 'rgba(255,255,255,0.22)',
           }}>
-            © 2025 FinAI. All rights reserved.
+            © 2025 FynmanAI. All rights reserved.
           </div>
 
           {/* Crafted badge */}
           <div
-            className="finai-glass-pill"
+            className="fynmanai-glass-pill"
             style={{
               padding: '10px 22px',
               borderRadius: '999px',
@@ -518,7 +518,7 @@ export function Footer({ onGetStarted }) {
             <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.28)' }}>
               Crafted with
             </span>
-            <span className="finai-heartbeat" style={{ fontSize: '14px', color: '#ef4444' }}>❤</span>
+            <span className="fynmanai-heartbeat" style={{ fontSize: '14px', color: '#ef4444' }}>❤</span>
             <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.28)' }}>
               by
             </span>
@@ -529,13 +529,13 @@ export function Footer({ onGetStarted }) {
               color: '#ffffff',
               letterSpacing: '-0.02em',
             }}>
-              FinAI
+              FynmanAI
             </span>
           </div>
 
           {/* Back to top */}
           <MagneticButton
-            className="finai-glass-pill"
+            className="fynmanai-glass-pill"
             style={{
               width: '46px',
               height: '46px',

@@ -86,7 +86,7 @@ function CanvasPreview() {
         <div style={{ maxWidth: '100%', display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'linear-gradient(135deg,rgba(124,106,247,0.7),rgba(80,160,255,0.4))', border: '1px solid rgba(124,106,247,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '6px', flexShrink: 0 }}>◈</div>
-            <span style={{ fontSize: '6px', fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>FinAI</span>
+            <span style={{ fontSize: '6px', fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>FynmanAI</span>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '2px 8px 8px 8px', padding: '5px 7px', fontSize: '6.5px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
             Binary Search Algorithm
@@ -173,12 +173,12 @@ export default function LandingPage() {
       <Hero
         eyebrow="Prompt · Visualize · Understand"
         title="Prompt. Visualize. Understand."
-        subtitle="Describe any financial concept in plain words — FinAI builds a live, interactive canvas in seconds."
+        subtitle="Describe any financial concept in plain words — FynmanAI builds a live, interactive canvas in seconds."
         ctaLabel="Start for Free"
         onCtaClick={openSignup}
       />
 
-      <FlowArt aria-label="FinAI Features">
+      <FlowArt aria-label="FynmanAI Features">
 
         {/* ══ CARD 1 — TRUSTED BY ══ */}
         <FlowSection aria-label="Trusted by leaders" style={{ background: C.bg1, color: C.text }}>
@@ -196,7 +196,7 @@ export default function LandingPage() {
                 sharpest minds
               </span>
             </div>
-            <div style={{ color: C.dim }}>trust FinAI.</div>
+            <div style={{ color: C.dim }}>trust FynmanAI.</div>
           </div>
 
           <Rule />
@@ -212,7 +212,7 @@ export default function LandingPage() {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '24px' }}>
             <p style={{ fontSize: 'clamp(15px, 1.6vw, 20px)', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.75, color: C.body, maxWidth: '48ch' }}>
-              "From hedge funds to first-time investors — FinAI translates every level of financial complexity into language you actually understand."
+              "From hedge funds to first-time investors — FynmanAI translates every level of financial complexity into language you actually understand."
             </p>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
               <div style={{ fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1 }}>
@@ -283,7 +283,7 @@ export default function LandingPage() {
                   display: 'flex', alignItems: 'center', paddingLeft: '10px',
                 }}>
                   <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' }}>
-                    app.finai.ai/canvas
+                    app.fynmanai.ai/canvas
                   </span>
                 </div>
               </div>

@@ -163,7 +163,7 @@ export function CinematicFooter({ onGetStarted }) {
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
-        FINAI
+        FYNMANAI
       </div>
 
       {/* Marquee row 1 */}
@@ -276,7 +276,7 @@ export function CinematicFooter({ onGetStarted }) {
             }}
           >
             <span>◈</span>
-            <span>Built with ❤ by FinAI</span>
+            <span>Built with ❤ by FynmanAI</span>
           </div>
 
           <div style={{ textAlign: 'center' }}>
@@ -355,9 +355,9 @@ export function CinematicFooter({ onGetStarted }) {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ color: '#7c6af7', fontSize: '16px' }}>◈</span>
-            <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '14px', color: '#e2e2e8' }}>FinAI</span>
+            <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '14px', color: '#e2e2e8' }}>FynmanAI</span>
           </div>
-          <span style={{ fontSize: '12px', color: '#8888a0' }}>© 2025 FinAI. All rights reserved.</span>
+          <span style={{ fontSize: '12px', color: '#8888a0' }}>© 2025 FynmanAI. All rights reserved.</span>
           <div style={{ display: 'flex', gap: '20px' }}>
             {['Privacy', 'Terms', 'Contact'].map(link => (
               <a
