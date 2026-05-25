@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthModal from './AuthModal';
 import { SimpleHeader } from '@/components/ui/simple-header';
 import { Hero } from '@/components/ui/hero-1';
 import { LogoCloud } from '@/components/ui/logo-cloud-3';
 import { Footer } from '@/components/ui/footer';
 import FlowArt, { FlowSection } from '@/components/ui/story-scroll';
+import { useAuth } from '@/context/AuthContext';
 import './LandingPage.css';
 
 // ── Design tokens — pure monochrome ──────────────────────────────────────────
@@ -156,6 +158,13 @@ function CanvasPreview() {
 export default function LandingPage() {
   const [showAuth, setShowAuth] = useState(false);
   const [authTab, setAuthTab]   = useState('signup');
+  const { user } = useAuth();
+  const navigate  = useNavigate();
+
+  // If already logged in (cookie/localStorage), skip landing and go straight to dashboard
+  useEffect(() => {
+    if (user) navigate('/dashboard', { replace: true });
+  }, [user, navigate]);
 
   function openSignup() { setAuthTab('signup'); setShowAuth(true); }
   function openLogin()  { setAuthTab('login');  setShowAuth(true); }
