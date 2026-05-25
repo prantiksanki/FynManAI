@@ -497,6 +497,277 @@ export async function executeAction(editor, action, onVoice) {
       break;
     }
 
+    // ── Stat card (KPI + progress bar) ───────────────────────────────────────
+    case 'drawStatCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 220, h: 120 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'stat-card',
+        x: pos.x, y: pos.y,
+        props: {
+          label:   action.label   || '',
+          value:   action.value   || '0',
+          sub:     action.sub     || '',
+          trend:   action.trend   || 'flat',
+          percent: typeof action.percent === 'number' ? action.percent : 70,
+          accent:  action.accent  || 'green',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Quote card (pull-quote) ───────────────────────────────────────────────
+    case 'drawQuoteCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 340, h: 140 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'quote-card',
+        x: pos.x, y: pos.y,
+        props: {
+          quote:  action.quote  || action.content || '',
+          author: action.author || '',
+          accent: action.accent || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Callout card (tip / warning / info / danger / success) ───────────────
+    case 'drawCallout': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 300, h: 90 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'callout-card',
+        x: pos.x, y: pos.y,
+        props: {
+          type:  action.calloutType || 'tip',
+          title: action.title || 'Note',
+          body:  action.body  || action.content || '',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Timeline card (vertical milestone list) ───────────────────────────────
+    case 'drawTimelineCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 240, h: 200 };
+      const raw = action.milestones || [];
+      const milestones = Array.isArray(raw) ? raw : [];
+      editor.createShape({
+        id: createShapeId(),
+        type: 'timeline-card',
+        x: pos.x, y: pos.y,
+        props: {
+          title:      action.title      || 'Timeline',
+          milestones,
+          accent:     action.accent     || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Compare card (Pro/Con or A vs B) ─────────────────────────────────────
+    case 'drawCompareCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 360, h: 180 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'compare-card',
+        x: pos.x, y: pos.y,
+        props: {
+          leftLabel:   action.leftLabel   || 'Pros',
+          rightLabel:  action.rightLabel  || 'Cons',
+          leftItems:   Array.isArray(action.leftItems)  ? action.leftItems  : [],
+          rightItems:  Array.isArray(action.rightItems) ? action.rightItems : [],
+          leftAccent:  action.leftAccent  || 'green',
+          rightAccent: action.rightAccent || 'red',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Badge card (pill/tag cloud) ───────────────────────────────────────────
+    case 'drawBadgeCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 300, h: 110 };
+      const rawBadges = action.badges || [];
+      const badges = Array.isArray(rawBadges) ? rawBadges : [];
+      editor.createShape({
+        id: createShapeId(),
+        type: 'badge-card',
+        x: pos.x, y: pos.y,
+        props: {
+          title:  action.title  || '',
+          badges,
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Radial / donut ring chart ─────────────────────────────────────────────
+    case 'drawRadialCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 180, h: 180 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'radial-card',
+        x: pos.x, y: pos.y,
+        props: {
+          label:   action.label   || '',
+          value:   action.value   || '0%',
+          percent: typeof action.percent === 'number' ? action.percent : 0,
+          sub:     action.sub     || '',
+          accent:  action.accent  || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Glow card (animated neon border) ─────────────────────────────────────
+    case 'drawGlowCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 280, h: 150 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'glow-card',
+        x: pos.x, y: pos.y,
+        props: {
+          icon:   action.icon   || '✦',
+          title:  action.title  || action.label || '',
+          body:   action.body   || action.content || '',
+          accent: action.accent || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Avatar stack (circular team members) ──────────────────────────────────
+    case 'drawAvatarCard': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 300, h: 140 };
+      const rawMembers = action.members || [];
+      const members = Array.isArray(rawMembers) ? rawMembers : [];
+      editor.createShape({
+        id: createShapeId(),
+        type: 'avatar-card',
+        x: pos.x, y: pos.y,
+        props: {
+          title:   action.title || 'Team',
+          members,
+          sub:     action.sub   || '',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Pill banner (gradient announcement strip) ──────────────────────────────
+    case 'drawPillBanner': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 420, h: 68 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'pill-banner',
+        x: pos.x, y: pos.y,
+        props: {
+          emoji:  action.emoji  || '✨',
+          text:   action.text   || action.title || action.content || '',
+          sub:    action.sub    || '',
+          accent: action.accent || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Step circle card (numbered/icon circle steps) ─────────────────────────
+    case 'drawStepCircle': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 480, h: 160 };
+      const rawSteps = action.steps || [];
+      const steps = Array.isArray(rawSteps) ? rawSteps : [];
+      editor.createShape({
+        id: createShapeId(),
+        type: 'step-circle-card',
+        x: pos.x, y: pos.y,
+        props: {
+          title: action.title || 'How It Works',
+          steps,
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Emoji sticker (floating emoji with glow halo) ─────────────────────────
+    case 'drawEmojiSticker': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 140, h: 140 };
+      editor.createShape({
+        id: createShapeId(),
+        type: 'emoji-sticker',
+        x: pos.x, y: pos.y,
+        props: {
+          emoji:   action.emoji   || '🚀',
+          caption: action.caption || '',
+          size:    action.emojiSize || 'lg',
+          accent:  action.accent  || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Reaction bubble cluster ───────────────────────────────────────────────
+    case 'drawReactionBubble': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 340, h: 60 };
+      const rawReactions = action.reactions || [];
+      const reactions = Array.isArray(rawReactions) ? rawReactions : [];
+      editor.createShape({
+        id: createShapeId(),
+        type: 'reaction-bubble',
+        x: pos.x, y: pos.y,
+        props: {
+          reactions,
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Emoji cloud (scattered mood/topic emoji cluster) ──────────────────────
+    case 'drawEmojiCloud': {
+      const pos = action.position || { x: 200, y: 200 };
+      const sz  = action.size    || { w: 380, h: 180 };
+      const rawItems = action.items || [];
+      const items = Array.isArray(rawItems) ? rawItems : [];
+      editor.createShape({
+        id: createShapeId(),
+        type: 'emoji-cloud',
+        x: pos.x, y: pos.y,
+        props: {
+          title:  action.title  || '',
+          items,
+          accent: action.accent || 'violet',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
     // ── Camera ────────────────────────────────────────────────────────────────
     case 'cameraFocus': {
       const pos = action.position || { x: 200, y: 200 };

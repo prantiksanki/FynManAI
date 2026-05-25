@@ -46,15 +46,31 @@ async function fetchVideo(req, res) {
 function pickBestPexelsVideo(videos, query) {
   for (const video of videos) {
     if (!video.video_files?.length) continue;
-    // Filter to landscape MP4 files, then pick highest resolution
+
+    // Keep only landscape MP4s, sorted by width ascending
     const files = video.video_files
       .filter(f => f.file_type === 'video/mp4' && f.width >= f.height)
-      .sort((a, b) => b.width - a.width);
-    const file = files[0];
+      .sort((a, b) => a.width - b.width);
+
+    if (!files.length) continue;
+
+    // Target 640px wide — smallest that still looks sharp on the 320px canvas card.
+    // Falls back to next size up if 640 isn't available.
+    // Never picks anything over 960px so 3 parallel videos never stall.
+    const MAX_WIDTH = 960;
+    const TARGET    = 640;
+
+    const candidates = files.filter(f => f.width <= MAX_WIDTH);
+    // Pick the one closest to TARGET from below (prefer equal-or-larger than target)
+    const file = candidates.find(f => f.width >= TARGET)   // first >= 640 within cap
+               || candidates[candidates.length - 1]         // largest under cap
+               || files[0];                                 // absolute fallback (smallest)
+
     if (!file?.link) continue;
+
     return {
       url:       file.link,
-      thumbnail: video.image,                          // Pexels still-frame JPEG
+      thumbnail: video.image,
       duration:  video.duration || 0,
       title:     video.user?.name ? `${video.user.name} — ${query}` : query,
       width:     file.width,
@@ -65,13 +81,14 @@ function pickBestPexelsVideo(videos, query) {
   return null;
 }
 
-// ── Pixabay: prefer large > medium > small file ───────────────────────────────
+// ── Pixabay: prefer small (640p) > medium for low-buffering parallel playback ──
 function pickBestPixabayVideo(hits) {
   for (const hit of hits) {
     const vids = hit.videos || {};
-    const file = vids.large?.url  ? vids.large
+    // Prefer small (≈640px) → medium → large  (reverse of original priority)
+    const file = vids.small?.url  ? vids.small
                : vids.medium?.url ? vids.medium
-               : vids.small?.url  ? vids.small
+               : vids.large?.url  ? vids.large
                : null;
     if (!file?.url) continue;
     return {
