@@ -1,5 +1,7 @@
 import { createShapeId, AssetRecordType } from 'tldraw';
-import { getImage } from '../services/imageCache';
+import { getImage }          from '../services/imageCache';
+import { getVideo }          from '../services/videoCache';
+import { enhanceVideoQuery } from '../services/VideoKeywordExtractor';
 import { voiceEngine } from '../services/voiceEngine';
 
 export function parseTime(t) {
@@ -288,6 +290,32 @@ export async function executeAction(editor, action, onVoice) {
       });
 
       editor.animateShape({ id: shapeId, type: 'image' }, { animation: { duration: 600 } });
+      break;
+    }
+
+    // ── Video ─────────────────────────────────────────────────────────────────
+    case 'insertVideo': {
+      const rawQuery = action.query || 'nature landscape';
+      const query    = enhanceVideoQuery(rawQuery, action._intent);
+      const vid      = await getVideo(query);
+      if (!vid?.url) break;
+
+      const pos = action.position || { x: 400, y: 200 };
+      const sz  = action.size    || { w: 320, h: 210 };
+
+      editor.createShape({
+        id: createShapeId(),
+        type: 'video-card',
+        x: pos.x, y: pos.y,
+        props: {
+          url:       vid.url,
+          thumbnail: vid.thumbnail || '',
+          title:     vid.title     || rawQuery,
+          duration:  vid.duration  || 0,
+          source:    vid.source    || 'unknown',
+          w: sz.w, h: sz.h,
+        },
+      });
       break;
     }
 

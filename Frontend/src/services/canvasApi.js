@@ -16,6 +16,11 @@ export async function fetchImageUrl(query) {
   return data;
 }
 
+export async function fetchVideoUrl(query) {
+  const { data } = await api.get('/video/fetch', { params: { query } });
+  return data;
+}
+
 // ── Session CRUD ───────────────────────────────────────────
 export async function createSessionApi(userId, title) {
   const { data } = await api.post('/sessions', { userId, title });

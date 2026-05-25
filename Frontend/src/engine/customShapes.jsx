@@ -584,6 +584,155 @@ export class TableCardUtil extends BaseBoxShapeUtil {
   }
 }
 
+// ─── 7. VideoCard ─────────────────────────────────────────────────────────────
+export class VideoCardUtil extends BaseBoxShapeUtil {
+  static type = 'video-card';
+  static props = {
+    url:       T.string,
+    thumbnail: T.string,
+    title:     T.string,
+    duration:  T.number,
+    source:    T.string,
+    w:         T.number,
+    h:         T.number,
+  };
+
+  getDefaultProps() {
+    return {
+      url: '', thumbnail: '', title: 'Video', duration: 0,
+      source: 'pexels', w: 320, h: 210,
+    };
+  }
+
+  component(shape) {
+    // Inject fade-in keyframe once — browser deduplicates identical style rules
+    if (typeof document !== 'undefined' && !document.getElementById('video-card-kf')) {
+      const s = document.createElement('style');
+      s.id = 'video-card-kf';
+      s.textContent = '@keyframes videoFadeIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}';
+      document.head.appendChild(s);
+    }
+
+    const { url, thumbnail, title, duration, w, h } = shape.props;
+    const TITLE_H = 32;
+
+    const fmtDuration = (sec) => {
+      if (!sec) return '';
+      return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+    };
+
+    return (
+      <HTMLContainer style={{
+        width: w, height: h,
+        background: C_BG_CARD2,
+        border: `1px solid ${C_BORDER}`,
+        borderTop: `3px solid ${ACCENT.violet}`,
+        borderRadius: 10,
+        boxSizing: 'border-box',
+        boxShadow: '0 6px 28px rgba(0,0,0,0.6)',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: FONT_BODY,
+        pointerEvents: 'all',
+        animation: 'videoFadeIn 0.5s ease forwards',
+      }}>
+
+        {/* ── Title bar ──────────────────────────────────────────────────────── */}
+        <div style={{
+          height: TITLE_H,
+          display: 'flex', alignItems: 'center',
+          padding: '0 10px', gap: 6,
+          background: '#0d1020',
+          borderBottom: `1px solid ${C_BORDER}`,
+          flexShrink: 0,
+        }}>
+          <span style={{ fontSize: 14, lineHeight: 1 }}>▶</span>
+          <span style={{
+            flex: 1, fontSize: 11, fontWeight: 600, color: C_TEXT,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>{title}</span>
+          {duration > 0 && (
+            <span style={{
+              fontSize: 10, color: ACCENT.violet,
+              background: ACCENT.violet + '22',
+              border: `1px solid ${ACCENT.violet}44`,
+              borderRadius: 4, padding: '1px 5px', flexShrink: 0,
+            }}>{fmtDuration(duration)}</span>
+          )}
+        </div>
+
+        {/* ── Video area: thumbnail → <video> on click ──────────────────────── */}
+        <div
+          style={{ position: 'relative', flex: 1, background: '#000', overflow: 'hidden', cursor: 'pointer' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            const container = e.currentTarget;
+            // Guard: don't replace if video already loaded
+            if (container.querySelector('video')) return;
+            // Remove thumbnail overlay
+            const overlay = container.querySelector('[data-overlay]');
+            if (overlay) overlay.remove();
+            // Create and append video element
+            const vid = document.createElement('video');
+            vid.src = url;
+            vid.controls = true;
+            vid.autoplay = true;
+            vid.preload = 'metadata';
+            vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+            container.appendChild(vid);
+          }}
+        >
+          {/* Thumbnail overlay with play button */}
+          <div data-overlay style={{ position: 'absolute', inset: 0 }}>
+            {thumbnail ? (
+              <img
+                src={thumbnail}
+                alt={title}
+                loading="lazy"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            ) : (
+              // Placeholder gradient when no thumbnail is available
+              <div style={{
+                width: '100%', height: '100%',
+                background: 'linear-gradient(135deg, #1a1f35, #0d1120)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: 40, opacity: 0.2 }}>▶</span>
+              </div>
+            )}
+
+            {/* Dark gradient over thumbnail for play-button legibility */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 60%, transparent 100%)',
+            }} />
+
+            {/* Play button circle */}
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 44, height: 44, borderRadius: '50%',
+              background: 'rgba(255,255,255,0.18)',
+              backdropFilter: 'blur(6px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 16, color: '#fff', paddingLeft: 2 }}>▶</span>
+            </div>
+          </div>
+        </div>
+
+      </HTMLContainer>
+    );
+  }
+
+  getIndicatorPath(shape) {
+    return indicatorPath(shape.props.w, shape.props.h);
+  }
+}
+
 // ─── Export all custom shape utils ───────────────────────────────────────────
 export const customShapeUtils = [
   HeroCardUtil,
@@ -592,4 +741,5 @@ export const customShapeUtils = [
   ProcessCardUtil,
   NodeCardUtil,
   TableCardUtil,
+  VideoCardUtil,
 ];

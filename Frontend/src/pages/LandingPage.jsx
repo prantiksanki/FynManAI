@@ -5,6 +5,7 @@ import { SimpleHeader } from '@/components/ui/simple-header';
 import { Hero } from '@/components/ui/hero-1';
 import { LogoCloud } from '@/components/ui/logo-cloud-3';
 import { Footer } from '@/components/ui/footer';
+
 import FlowArt, { FlowSection } from '@/components/ui/story-scroll';
 import { useAuth } from '@/context/AuthContext';
 import './LandingPage.css';
