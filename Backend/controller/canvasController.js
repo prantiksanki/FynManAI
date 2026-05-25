@@ -63,7 +63,7 @@ Use drawHeroCard at hero slot (title="topic name", subtitle="one-line descriptio
 createNodeGraph at x:60,y:155. CRITICAL: max 5 nodes, HGAP=180px, VGAP=150px. Max right edge must stay under x:900. Max bottom edge must stay under y:620.
 drawCodeCard at code_block (x:40,y:640) with 6-8 real lines of code. language matches topic.
 drawTableCard at table (x:460,y:640) showing a relevant query result or data.
-4 drawFeatureCard at card_r1/r2/r3/r4 — icon+label+body for key concepts.
+2 drawFeatureCard + 1 drawBadgeCard + 1 drawCallout at card_r1/r2/r3/r4 slots — use drawBadgeCard for tech stack (badges=[{label,accent}]) and drawCallout for a key tip/warning.
 drawProcessRow at process (x:40,y:900) for end-to-end flow (4-5 steps).
 HARD RULE: No shape may have x > 900 unless it is in the card_r* or table slots. Graph nodes must fit within x:60–880, y:155–600.`
   };
@@ -87,8 +87,8 @@ function getEmotionalLayout() {
     instructions: `
 Use drawHeroCard at hero with warm greeting title and subtitle.
 2 insertVideo: one at image_left (query="calm nature flowers candle serene"), one at image_right (query="sunrise ocean sky waves").
-drawFeatureCard at msg_center (icon="💬", label=empathetic headline, body=2-sentence warm message). size:{w:540,h:120}.
-drawFeatureCard at msg_center2 (icon="🌱", label=supportive headline, body=2-sentence encouragement). size:{w:540,h:160}.
+drawQuoteCard at msg_center — an uplifting quote with author. size:{w:540,h:120}.
+drawCallout at msg_center2 — calloutType="success", title=supportive headline, body=2-sentence encouragement. size:{w:540,h:120}.
 4 drawFeatureCard at card_bl/bc/brc/br — heart/star/sun/moon emoji icons, affirmation label+body.
 Soft, calming voice throughout.`
   };
@@ -111,9 +111,9 @@ function getBusinessLayout() {
     instructions: `
 Use drawHeroCard at hero (title=company/product name, subtitle=tagline).
 createNodeGraph at x:30,y:160 (org/product structure, 4-6 nodes).
-drawProcessRow at x:430,y:180 (roadmap phases, 4-5 steps with icons).
-3 drawFeatureCard at kpi_a/b/c — each showing a KPI metric (icon="📈"/"💰"/"👥", label=metric, body=value+context).
-4 drawFeatureCard at pillar_a/b/c/d — core value pillars with emoji icons.`
+drawTimelineCard at x:430,y:180 (roadmap milestones, 4-5 phases with done:true/false). size:{w:240,h:200}.
+3 drawStatCard at kpi_a/b/c — each KPI with label, value, trend, percent.
+4 drawBadgeCard or drawFeatureCard at pillar_a/b/c/d — core value pillars or tech stack.`
   };
 }
 
@@ -136,12 +136,12 @@ function getFinanceLayout() {
     instructions: `
 FINANCE layout. Use financial data, metrics, and flows.
 drawHeroCard at hero (title=financial topic, subtitle=one-line summary with key stat).
-4 drawFeatureCard at kpi_a/b/c/d — each a key financial metric (icon="📈"/"💰"/"📊"/"💵", label=metric name, body=value + brief context).
+4 drawStatCard at kpi_a/b/c/d — each a KPI with label=metric name, value=actual number, sub=context, trend=up|down|flat, percent=0-100.
 drawTableCard at table (x:40,y:290) — financial data table with 3-4 columns and 4-5 rows of real numbers.
 createNodeGraph at x:580,y:290 — financial flow or structure (4-5 nodes max). CRITICAL: nodes must stay within x:580–1100.
 drawProcessRow at process (x:40,y:560) — 4-5 step financial process or formula breakdown.
-4 drawFeatureCard at insight_a/b/c/d — key takeaways or risk factors with emoji icons.
-NO insertImage — use data, tables, and charts instead.`
+4 drawCallout at insight_a/b/c/d — key takeaways using calloutType tip|warning|info|success with title+body.
+NO insertImage or insertVideo — use data, tables, and charts instead.`
   };
 }
 
@@ -229,7 +229,7 @@ Three-act story layout. drawHeroCard at hero (title=story title, subtitle=loglin
 Act 1=Setup (x:40): drawFeatureCard at act1_card (icon+act label), writeText body, insertVideo at act1_image (use a cinematic scene query).
 Act 2=Conflict (x:420): drawFeatureCard at act2_card, writeText body, insertVideo at act2_image (use a dramatic scene query).
 Act 3=Resolution (x:800): drawFeatureCard at act3_card, writeText body, insertVideo at act3_image (use a hopeful/triumphant scene query).
-writeText at quote (body style) for a memorable quote spanning all three acts.`
+drawQuoteCard at quote slot — a memorable quote from the story with author. size:{w:900,h:130}.`
   };
 }
 
@@ -354,6 +354,20 @@ drawArrow:        { "time":"Xs", "action":"drawArrow",        "from":{"x":N,"y":
 drawFormula:      { "time":"Xs", "action":"drawFormula",      "formula":"a² + b² = c²", "position":{"x":N,"y":N} }
 writeText:        { "time":"Xs", "action":"writeText",        "content":"text", "position":{"x":N,"y":N}, "style":"body|handwritten", "width":N }
 highlightArea:    { "time":"Xs", "action":"highlightArea",    "position":{"x":N,"y":N}, "size":{"w":N,"h":N}, "opacity":0.15 }
+drawStatCard:     { "time":"Xs", "action":"drawStatCard",     "label":"Metric Name", "value":"$4.2M", "sub":"vs last quarter", "trend":"up|down|flat", "percent":75, "accent":"green|blue|orange|violet|teal", "position":{"x":N,"y":N}, "size":{"w":220,"h":120} }
+drawQuoteCard:    { "time":"Xs", "action":"drawQuoteCard",    "quote":"Inspiring quote text here.", "author":"— Person Name", "accent":"violet|blue|teal|orange", "position":{"x":N,"y":N}, "size":{"w":340,"h":140} }
+drawCallout:      { "time":"Xs", "action":"drawCallout",      "calloutType":"tip|warning|info|danger|success", "title":"Short Title", "body":"1-2 sentence explanation.", "position":{"x":N,"y":N}, "size":{"w":300,"h":90} }
+drawTimelineCard: { "time":"Xs", "action":"drawTimelineCard", "title":"Roadmap", "milestones":[{"date":"Q1 2024","label":"Phase name","done":true},{"date":"Q2 2024","label":"Next phase","done":false}], "accent":"violet|blue|green|teal", "position":{"x":N,"y":N}, "size":{"w":240,"h":200} }
+drawCompareCard:  { "time":"Xs", "action":"drawCompareCard",  "leftLabel":"Pros", "rightLabel":"Cons", "leftItems":["Point 1","Point 2"], "rightItems":["Point 1","Point 2"], "leftAccent":"green", "rightAccent":"red", "position":{"x":N,"y":N}, "size":{"w":360,"h":180} }
+drawBadgeCard:    { "time":"Xs", "action":"drawBadgeCard",    "title":"Technologies", "badges":[{"label":"React","accent":"blue"},{"label":"Node.js","accent":"green"}], "position":{"x":N,"y":N}, "size":{"w":300,"h":110} }
+drawRadialCard:   { "time":"Xs", "action":"drawRadialCard",   "label":"Metric", "value":"72%", "percent":72, "sub":"of target", "accent":"violet|green|blue|orange|teal", "position":{"x":N,"y":N}, "size":{"w":180,"h":180} }
+drawGlowCard:     { "time":"Xs", "action":"drawGlowCard",     "icon":"✦", "title":"Key Insight", "body":"1-2 sentence insight or highlight with wow factor.", "accent":"violet|blue|green|orange|pink|teal", "position":{"x":N,"y":N}, "size":{"w":280,"h":150} }
+drawAvatarCard:   { "time":"Xs", "action":"drawAvatarCard",   "title":"Team", "members":[{"name":"Alice","accent":"violet","emoji":"👩‍💻"},{"name":"Bob","accent":"blue","emoji":"👨‍🔬"}], "sub":"2 contributors", "position":{"x":N,"y":N}, "size":{"w":300,"h":140} }
+drawPillBanner:   { "time":"Xs", "action":"drawPillBanner",   "emoji":"🚀", "text":"Announcement headline", "sub":"click to explore →", "accent":"violet|blue|green|orange|pink", "position":{"x":N,"y":N}, "size":{"w":420,"h":68} }
+drawStepCircle:   { "time":"Xs", "action":"drawStepCircle",   "title":"How It Works", "steps":[{"label":"Define","icon":"🎯","accent":"violet"},{"label":"Build","icon":"🔨","accent":"blue"}], "position":{"x":N,"y":N}, "size":{"w":480,"h":160} }
+drawEmojiSticker: { "time":"Xs", "action":"drawEmojiSticker", "emoji":"🚀", "caption":"optional label", "emojiSize":"sm|md|lg|xl", "accent":"violet|blue|green|orange|pink|yellow|teal", "position":{"x":N,"y":N}, "size":{"w":140,"h":140} }
+drawReactionBubble:{ "time":"Xs","action":"drawReactionBubble","reactions":[{"emoji":"🔥","count":42,"accent":"orange"},{"emoji":"❤️","count":38,"accent":"red"}], "position":{"x":N,"y":N}, "size":{"w":340,"h":60} }
+drawEmojiCloud:   { "time":"Xs", "action":"drawEmojiCloud",   "title":"Vibes", "items":[{"emoji":"🎯","label":"Focus","size":"lg","accent":"violet"},{"emoji":"⚡","label":"Speed","size":"md","accent":"yellow"}], "accent":"violet", "position":{"x":N,"y":N}, "size":{"w":380,"h":180} }
 
 ━━━ LANGUAGE RULE ━━━
 CRITICAL: Detect the language of the user's message and respond ENTIRELY in that same language.
@@ -364,8 +378,8 @@ CRITICAL: Detect the language of the user's message and respond ENTIRELY in that
 
 ━━━ MANDATORY RULES ━━━
 1. COORDINATES: Use ONLY the x,y values from the slots above. Do NOT invent coordinates. Each slot is reserved for exactly one action. position.x and position.y must exactly match a slot entry above.
-2. Generate 10–16 actions total. First action: voice at "0s". Interleave voice and visuals. Each visual action gets a voice narration within 2s before or after it.
-3. PREFER the new card actions: drawHeroCard for titles, drawFeatureCard for key points/stickies, drawCodeCard for code, drawProcessRow for steps, drawTableCard for data.
+2. Generate 12–18 actions total. First action: voice at "0s". Interleave voice and visuals. Each visual action gets a voice narration within 2s before or after it.
+3. PREFER rich card actions: drawHeroCard for titles, drawFeatureCard for key points, drawStatCard for metrics/KPIs, drawRadialCard for percentage-based metrics, drawGlowCard for hero highlights or key conclusions, drawQuoteCard for quotes/insights, drawCallout for tips/warnings, drawTimelineCard for roadmaps/milestones, drawCompareCard for pros-cons/A-vs-B, drawBadgeCard for tech stacks/tags, drawAvatarCard for team/contributors, drawPillBanner for announcements/section headers, drawStepCircle for process steps with emoji icons, drawEmojiSticker for a single standout emoji with glow effect (use for emotional/story/travel layouts to add personality), drawReactionBubble for engagement metrics or audience reactions (counts with emoji), drawEmojiCloud for mood boards, topic maps, or vibe summaries (emotional/story layouts), drawCodeCard for code, drawProcessRow for multi-step flows, drawTableCard for data.
 4. createNodeGraph: list nodes with id+label+sublabel, edges with from/to/label. Backend handles layout.
 5. drawProcessRow steps: each step needs label, body (1 sentence), accent color, step number.
 6. insertImage query: a specific real landmark, person, or object name (e.g. "Eiffel Tower Paris" not "city"). Always in English (image search query).
@@ -385,7 +399,7 @@ CRITICAL: Detect the language of the user's message and respond ENTIRELY in that
 // ─── Snap AI-generated positions to the nearest declared slot ─────────────────
 function snapToSlots(timeline, slots) {
   const SNAP_RADIUS = 80;  // tight — only fix clear drift, not intentional off-grid placements
-  const SKIP_ACTIONS = new Set(['drawArrow', 'cameraFocus', 'voice', 'panTo', 'zoomTo', 'createNodeGraph', 'drawProcessRow']);
+  const SKIP_ACTIONS = new Set(['drawArrow', 'cameraFocus', 'voice', 'panTo', 'zoomTo', 'createNodeGraph', 'drawProcessRow', 'drawCompareCard', 'drawTimelineCard']);
   const slotList = Object.values(slots).filter(s => s && typeof s.x === 'number');
   return timeline.map(action => {
     const a = { ...action };
@@ -528,9 +542,87 @@ function enforceLayout(action) {
   }
 
   // Default sizes for new card types
-  if (a.action === 'drawHeroCard'    && !a.size) a.size = { w: 700, h: 120 };
-  if (a.action === 'drawFeatureCard' && !a.size) a.size = { w: 220, h: 110 };
-  if (a.action === 'insertVideo'     && !a.size) a.size = { w: 320, h: 210 };
+  if (a.action === 'drawHeroCard'     && !a.size) a.size = { w: 700, h: 120 };
+  if (a.action === 'drawFeatureCard'  && !a.size) a.size = { w: 220, h: 110 };
+  if (a.action === 'insertVideo'      && !a.size) a.size = { w: 320, h: 210 };
+  if (a.action === 'drawStatCard'     && !a.size) a.size = { w: 220, h: 120 };
+  if (a.action === 'drawQuoteCard'    && !a.size) a.size = { w: 340, h: 140 };
+  if (a.action === 'drawCallout'      && !a.size) a.size = { w: 300, h:  90 };
+  if (a.action === 'drawTimelineCard' && !a.size) a.size = { w: 240, h: 200 };
+  if (a.action === 'drawCompareCard'  && !a.size) a.size = { w: 360, h: 180 };
+  if (a.action === 'drawBadgeCard'    && !a.size) a.size = { w: 300, h: 110 };
+  if (a.action === 'drawRadialCard'   && !a.size) a.size = { w: 180, h: 180 };
+  if (a.action === 'drawGlowCard'     && !a.size) a.size = { w: 280, h: 150 };
+  if (a.action === 'drawAvatarCard'   && !a.size) a.size = { w: 300, h: 140 };
+  if (a.action === 'drawPillBanner'   && !a.size) a.size = { w: 420, h:  68 };
+  if (a.action === 'drawStepCircle'   && !a.size) a.size = { w: 480, h: 160 };
+  if (a.action === 'drawEmojiSticker' && !a.size) a.size = { w: 140, h: 140 };
+  if (a.action === 'drawReactionBubble'&&!a.size) a.size = { w: 340, h:  60 };
+  if (a.action === 'drawEmojiCloud'   && !a.size) a.size = { w: 380, h: 180 };
+
+  // Validate reactions array for drawReactionBubble
+  if (a.action === 'drawReactionBubble') {
+    if (!Array.isArray(a.reactions)) a.reactions = [];
+    a.reactions = a.reactions.slice(0, 8).map(r => ({
+      emoji:  String(r.emoji  || '⭐'),
+      count:  Number(r.count  || 0),
+      accent: String(r.accent || 'violet'),
+    }));
+  }
+  // Validate items array for drawEmojiCloud
+  if (a.action === 'drawEmojiCloud') {
+    if (!Array.isArray(a.items)) a.items = [];
+    a.items = a.items.slice(0, 10).map(it => ({
+      emoji:  String(it.emoji  || '✨'),
+      label:  it.label ? String(it.label) : undefined,
+      size:   ['sm','md','lg'].includes(it.size) ? it.size : 'md',
+      accent: String(it.accent || 'violet'),
+    }));
+  }
+
+  // Validate member arrays for drawAvatarCard
+  if (a.action === 'drawAvatarCard') {
+    if (!Array.isArray(a.members)) a.members = [];
+    a.members = a.members.slice(0, 8).map(m => ({
+      name:   String(m.name   || '?'),
+      accent: String(m.accent || 'violet'),
+      emoji:  m.emoji ? String(m.emoji) : undefined,
+    }));
+  }
+  // Validate steps array for drawStepCircle
+  if (a.action === 'drawStepCircle') {
+    if (!Array.isArray(a.steps)) a.steps = [];
+    a.steps = a.steps.slice(0, 6).map(s => ({
+      label:  String(s.label  || ''),
+      icon:   s.icon  ? String(s.icon)  : undefined,
+      accent: String(s.accent || 'violet'),
+    }));
+  }
+
+  // Validate milestones array for drawTimelineCard
+  if (a.action === 'drawTimelineCard') {
+    if (!Array.isArray(a.milestones)) a.milestones = [];
+    a.milestones = a.milestones.slice(0, 6).map(m => ({
+      date:  String(m.date  || ''),
+      label: String(m.label || ''),
+      done:  !!m.done,
+    }));
+  }
+  // Validate badge arrays for drawBadgeCard
+  if (a.action === 'drawBadgeCard') {
+    if (!Array.isArray(a.badges)) a.badges = [];
+    a.badges = a.badges.slice(0, 12).map(b => ({
+      label:  String(b.label  || ''),
+      accent: String(b.accent || 'violet'),
+    }));
+  }
+  // Validate item arrays for drawCompareCard
+  if (a.action === 'drawCompareCard') {
+    if (!Array.isArray(a.leftItems))  a.leftItems  = [];
+    if (!Array.isArray(a.rightItems)) a.rightItems = [];
+    a.leftItems  = a.leftItems.slice(0, 5).map(String);
+    a.rightItems = a.rightItems.slice(0, 5).map(String);
+  }
 
   // Pre-compute BFS layout — cap to 820px so nodes never bleed into right column
   if (a.action === 'createNodeGraph' && a.nodes?.length) {
