@@ -86,7 +86,7 @@ function getEmotionalLayout() {
     },
     instructions: `
 Use drawHeroCard at hero with warm greeting title and subtitle.
-2 insertImage: one at image_left (calming nature/flowers/candle), one at image_right (sunrise/ocean/sky).
+2 insertVideo: one at image_left (query="calm nature flowers candle serene"), one at image_right (query="sunrise ocean sky waves").
 drawFeatureCard at msg_center (icon="💬", label=empathetic headline, body=2-sentence warm message). size:{w:540,h:120}.
 drawFeatureCard at msg_center2 (icon="🌱", label=supportive headline, body=2-sentence encouragement). size:{w:540,h:160}.
 4 drawFeatureCard at card_bl/bc/brc/br — heart/star/sun/moon emoji icons, affirmation label+body.
@@ -164,8 +164,8 @@ function getGeneralLayout() {
       instructions: `
 COMPARISON layout. Two things side by side.
 drawHeroCard at hero spanning full width (title="A vs B", subtitle="key difference").
-Left (x:40): insertImage at left_img, 2x drawFeatureCard at left_c1/c2 for pros/features.
-Right (x:900): insertImage at right_img, 2x drawFeatureCard at right_c1/c2 for pros/features.
+Left (x:40): insertVideo at left_img (scene query matching left subject), 2x drawFeatureCard at left_c1/c2 for pros/features.
+Right (x:900): insertVideo at right_img (scene query matching right subject), 2x drawFeatureCard at right_c1/c2 for pros/features.
 writeText "VS" (heading) at vs_label x:600,y:330.
 drawArrow vertical divider from x:680,y:140 to x:680,y:650.`
     };
@@ -187,7 +187,7 @@ drawArrow vertical divider from x:680,y:140 to x:680,y:650.`
       instructions: `
 FLOW layout. drawHeroCard at hero.
 drawProcessRow at process x:40,y:155 (4-5 steps with emoji icons, accent colors).
-3 insertImage in a row at img1/img2/img3 for visual context.
+3 insertVideo in a row at img1/img2/img3 for visual context (use descriptive scene queries matching the topic steps).
 4 drawFeatureCard at card_1/2/3/4 for takeaways.`
     };
   }
@@ -226,9 +226,9 @@ function getStoryLayout() {
     },
     instructions: `
 Three-act story layout. drawHeroCard at hero (title=story title, subtitle=logline).
-Act 1=Setup (x:40): drawFeatureCard at act1_card (icon+act label), writeText body, insertImage.
-Act 2=Conflict (x:420): drawFeatureCard at act2_card, writeText body, insertImage.
-Act 3=Resolution (x:800): drawFeatureCard at act3_card, writeText body, insertImage.
+Act 1=Setup (x:40): drawFeatureCard at act1_card (icon+act label), writeText body, insertVideo at act1_image (use a cinematic scene query).
+Act 2=Conflict (x:420): drawFeatureCard at act2_card, writeText body, insertVideo at act2_image (use a dramatic scene query).
+Act 3=Resolution (x:800): drawFeatureCard at act3_card, writeText body, insertVideo at act3_image (use a hopeful/triumphant scene query).
 writeText at quote (body style) for a memorable quote spanning all three acts.`
   };
 }
@@ -348,11 +348,19 @@ drawProcessRow:   { "time":"Xs", "action":"drawProcessRow",   "steps":[{"label":
 drawTableCard:    { "time":"Xs", "action":"drawTableCard",    "title":"Result Caption", "headers":["col1","col2","col3"], "rows":[["v1","v2","v3"],["v4","v5","v6"]], "accent":"teal|blue|green", "position":{"x":N,"y":N}, "size":{"w":N,"h":N} }
 createNodeGraph:  { "time":"Xs", "action":"createNodeGraph",  "nodes":[{"id":"a","label":"Name","sublabel":"role"}], "edges":[{"from":"a","to":"b","label":"rel"}], "position":{"x":N,"y":N} }
 insertImage:      { "time":"Xs", "action":"insertImage",      "query":"specific real-world landmark or object name", "position":{"x":N,"y":N}, "size":{"w":N,"h":N} }
+insertVideo:      { "time":"Xs", "action":"insertVideo",      "query":"descriptive scene e.g. 'ocean waves sunset' or 'busy city street'", "position":{"x":N,"y":N}, "size":{"w":320,"h":210} }
 drawShape:        { "time":"Xs", "action":"drawShape",        "shape":"rectangle|ellipse|triangle", "position":{"x":N,"y":N}, "size":{"w":N,"h":N}, "label":"label", "color":"blue|green|violet|orange|yellow" }
 drawArrow:        { "time":"Xs", "action":"drawArrow",        "from":{"x":N,"y":N}, "to":{"x":N,"y":N}, "label":"optional" }
 drawFormula:      { "time":"Xs", "action":"drawFormula",      "formula":"a² + b² = c²", "position":{"x":N,"y":N} }
 writeText:        { "time":"Xs", "action":"writeText",        "content":"text", "position":{"x":N,"y":N}, "style":"body|handwritten", "width":N }
 highlightArea:    { "time":"Xs", "action":"highlightArea",    "position":{"x":N,"y":N}, "size":{"w":N,"h":N}, "opacity":0.15 }
+
+━━━ LANGUAGE RULE ━━━
+CRITICAL: Detect the language of the user's message and respond ENTIRELY in that same language.
+- If the user writes in Bengali → all text fields (title, subtitle, label, body, content, caption, step labels, voice narration) must be in Bengali.
+- If the user writes in Hindi → respond in Hindi. Spanish → Spanish. French → French. And so on for every language.
+- ONLY exception: JSON keys, action names, accent values, and coordinates remain in English (they are structural, not content).
+- The "title" field in the final JSON output must also be in the user's language.
 
 ━━━ MANDATORY RULES ━━━
 1. COORDINATES: Use ONLY the x,y values from the slots above. Do NOT invent coordinates. Each slot is reserved for exactly one action. position.x and position.y must exactly match a slot entry above.
@@ -360,8 +368,12 @@ highlightArea:    { "time":"Xs", "action":"highlightArea",    "position":{"x":N,
 3. PREFER the new card actions: drawHeroCard for titles, drawFeatureCard for key points/stickies, drawCodeCard for code, drawProcessRow for steps, drawTableCard for data.
 4. createNodeGraph: list nodes with id+label+sublabel, edges with from/to/label. Backend handles layout.
 5. drawProcessRow steps: each step needs label, body (1 sentence), accent color, step number.
-6. insertImage query: a specific real landmark, person, or object name (e.g. "Eiffel Tower Paris" not "city").
-7. ${intent === 'math' || intent === 'finance' ? 'FORBIDDEN: do not use insertImage — use drawTableCard, drawFeatureCard, and createNodeGraph only.' : 'Use insertImage when the topic has a strong visual subject.'}
+6. insertImage query: a specific real landmark, person, or object name (e.g. "Eiffel Tower Paris" not "city"). Always in English (image search query).
+7. ${intent === 'math' || intent === 'finance'
+    ? 'FORBIDDEN: do not use insertImage or insertVideo — use drawTableCard, drawFeatureCard, and createNodeGraph only.'
+    : intent === 'story' || intent === 'emotional' || intent === 'travel'
+      ? 'Use insertVideo for image slots (1–2 actions max). Use descriptive scene queries (e.g. "calm forest stream", "crowded market street"). You may also use insertImage. Prefer insertVideo over insertImage for act/emotional/travel image slots.'
+      : 'Use insertImage when the topic has a strong visual subject. You may use insertVideo (max 1) in place of one insertImage for flow/comparison layouts.'}
 8. Camera movement is automatic — do NOT emit panTo, zoomTo, or cameraFocus actions.
 9. No two actions may share the same "time" value. Start at "0s", increment by at least 2s per action.
 10. drawCodeCard lines: provide 4-8 real, meaningful lines of actual code for the topic. Not placeholder comments.
@@ -453,7 +465,9 @@ async function generateCanvasTimeline(req, res) {
     }
 
     if (intent === 'math' || intent === 'finance') {
-      parsed.timeline = parsed.timeline.filter(a => a.action !== 'insertImage');
+      parsed.timeline = parsed.timeline.filter(
+        a => a.action !== 'insertImage' && a.action !== 'insertVideo'
+      );
     }
 
     parsed.timeline = parsed.timeline.map(enforceLayout);
@@ -516,6 +530,7 @@ function enforceLayout(action) {
   // Default sizes for new card types
   if (a.action === 'drawHeroCard'    && !a.size) a.size = { w: 700, h: 120 };
   if (a.action === 'drawFeatureCard' && !a.size) a.size = { w: 220, h: 110 };
+  if (a.action === 'insertVideo'     && !a.size) a.size = { w: 320, h: 210 };
 
   // Pre-compute BFS layout — cap to 820px so nodes never bleed into right column
   if (a.action === 'createNodeGraph' && a.nodes?.length) {
@@ -538,7 +553,7 @@ function parseTimeMs(t) {
 }
 
 function injectCameraFocus(timeline) {
-  const triggers = new Set(['insertImage', 'createNodeGraph', 'createTimeline', 'drawProcessRow', 'drawTableCard']);
+  const triggers = new Set(['insertImage', 'insertVideo', 'createNodeGraph', 'createTimeline', 'drawProcessRow', 'drawTableCard']);
   const injected = [];
   timeline.forEach(action => {
     injected.push(action);

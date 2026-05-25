@@ -307,7 +307,8 @@ export default function App() {
 
     if (sessionNum > 0) drawDivider(editor, yOffset - 48, `◈ Q${sessionNum + 1}: ${prompt}`);
 
-    const shiftedTimeline = offsetTimeline(result.timeline, yOffset);
+    const intentStamped   = result.timeline.map(a => ({ ...a, _intent: result.intent }));
+    const shiftedTimeline = offsetTimeline(intentStamped, yOffset);
 
     if (sessionId && sessionId !== 'new') {
       const title = prompt.length > 48 ? prompt.slice(0, 48).trimEnd() + '…' : prompt;
@@ -330,7 +331,8 @@ export default function App() {
         yOffsetRef.current    = yOffset + SESSION_STRIDE;
         sessionNumRef.current += 1;
       }
-      const shifted = offsetTimeline(entry.timeline.timeline, yOffset);
+      const intentStamped = (entry.timeline.timeline || []).map(a => ({ ...a, _intent: entry.timeline?.intent }));
+      const shifted = offsetTimeline(intentStamped, yOffset);
       if (sessionNumRef.current > 1 && editorRef.current) drawDivider(editorRef.current, yOffset - 48, `◈ ${entry.prompt}`);
       await runTimeline(shifted);
     }

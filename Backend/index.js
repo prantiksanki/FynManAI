@@ -7,6 +7,7 @@ const path = require('path');
 
 const { generateCanvasTimeline } = require('./controller/canvasController');
 const { fetchImage } = require('./controller/imageController');
+const { fetchVideo } = require('./controller/videoController');
 const { generateTts } = require('./controller/ttsController');
 const {
   createSession, listSessions, getSession, updateSession, deleteSession, saveSnapshot,
@@ -51,6 +52,9 @@ app.post('/api/tts', generateTts);
 
 // Image proxy
 app.get('/api/image/fetch', fetchImage);
+
+// Video proxy
+app.get('/api/video/fetch', fetchVideo);
 
 // Session CRUD
 app.post('/api/sessions',                          createSession);
