@@ -11,7 +11,7 @@ function decodeJwt(token) {
 }
 
 // ── Cookie helpers ────────────────────────────────────────────
-const COOKIE_KEY = 'finai_user';
+const COOKIE_KEY = 'fynmanai_user';
 const COOKIE_DAYS = 30;
 
 function setCookie(name, value, days) {

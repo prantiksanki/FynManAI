@@ -1,4 +1,4 @@
-const KEY = 'finai_sessions';
+const KEY = 'fynmanai_sessions';
 
 function load() {
   try {

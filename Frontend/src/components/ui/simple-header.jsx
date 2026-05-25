@@ -52,7 +52,7 @@ export function SimpleHeader({ onSignIn, onGetStarted }) {
               backgroundClip: 'text',
             }}
           >
-            FinAI
+            FynmanAI
           </span>
           <span
             style={{
@@ -188,7 +188,7 @@ export function SimpleHeader({ onSignIn, onGetStarted }) {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '16px' }}>
               <span style={{ color: '#ffffff', fontSize: '20px' }}>◈</span>
-              <span style={{ fontFamily: 'monospace', fontSize: '16px', fontWeight: 700, color: '#ffffff' }}>FinAI</span>
+              <span style={{ fontFamily: 'monospace', fontSize: '16px', fontWeight: 700, color: '#ffffff' }}>FynmanAI</span>
             </div>
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {links.map((link) => (

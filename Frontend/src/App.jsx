@@ -232,7 +232,7 @@ export default function App() {
         if (editor) {
           const snapshot = editor.getSnapshot();
           saveSnapshotApi(sessionId, snapshot).catch(err =>
-            console.warn('[FinAI] Snapshot save failed:', err.message)
+            console.warn('[FynmanAI] Snapshot save failed:', err.message)
           );
         }
       }
@@ -779,7 +779,7 @@ export default function App() {
           </button>
           <div style={{ width: '1px', height: '16px', background: 'rgba(255,255,255,0.1)' }} />
           <span style={{ color: '#fff', fontSize: '16px' }}>◈</span>
-          <span style={{ fontWeight: 700, fontSize: '14px', fontFamily: 'monospace', background: 'linear-gradient(180deg,#fff 0%,#999 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>FinAI</span>
+          <span style={{ fontWeight: 700, fontSize: '14px', fontFamily: 'monospace', background: 'linear-gradient(180deg,#fff 0%,#999 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>FynmanAI</span>
         </div>
 
         {/* Right: toolbar actions */}
@@ -891,7 +891,7 @@ export default function App() {
                     fontSize: '18px', opacity: 0.6,
                   }}>◈</div>
                   <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', lineHeight: 1.7, margin: 0 }}>
-                    Type a prompt below.<br />FinAI builds the canvas<br />and narrates it here.
+                    Type a prompt below.<br />FynmanAI builds the canvas<br />and narrates it here.
                   </p>
                 </div>
               )}
@@ -946,7 +946,7 @@ export default function App() {
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '10px', flexShrink: 0,
                         }}>◈</div>
-                        <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>FinAI</span>
+                        <span style={{ fontSize: '9px', fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>FynmanAI</span>
                         {msg.intent && (
                           <span style={{
                             fontSize: '9px', padding: '2px 7px', borderRadius: '999px',

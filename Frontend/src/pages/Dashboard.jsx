@@ -213,7 +213,7 @@ export default function Dashboard() {
             {!collapsed && (
               <div className="db-fade-text" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '18px', color: '#ffffff', flexShrink: 0 }}>◈</span>
-                <span style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', background: 'linear-gradient(180deg,#fff 0%,#999 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>FinAI</span>
+                <span style={{ fontWeight: 700, fontSize: '15px', fontFamily: 'monospace', background: 'linear-gradient(180deg,#fff 0%,#999 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>FynmanAI</span>
               </div>
             )}
 
@@ -428,7 +428,7 @@ export default function Dashboard() {
           <div style={{ textAlign: 'center', marginBottom: '40px', position: 'relative', zIndex: 1 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px', padding: '5px 16px', borderRadius: '999px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Sparkles size={12} style={{ color: 'rgba(255,255,255,0.5)' }} />
-              <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>FinAI Canvas</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>FynmanAI Canvas</span>
             </div>
             <h1 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: '12px' }}>
               <span style={{ background: 'linear-gradient(180deg,#ffffff 0%,#888888 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
