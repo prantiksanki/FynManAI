@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { getSessionApi, updateSessionApi, saveSnapshotApi } from './services/canvasApi';
-import { Tldraw, createShapeId, toRichText } from 'tldraw';
+import { Tldraw, createShapeId } from 'tldraw';
 import 'tldraw/tldraw.css';
 
 import { useCanvasGeneration } from './hooks/useCanvasGeneration';
@@ -16,14 +16,56 @@ import { MorphingSpinner } from './components/ui/morphing-spinner';
 
 const SESSION_STRIDE = 880;
 
+// ── Snapshot migration: strip v5-only props so tldraw v2 can load old snapshots ──
+// v5 used `richText: { type, value }` on arrow/text/geo built-in shapes.
+// v2 uses `text: string`. We strip richText and map it to text before loading.
+function sanitizeSnapshot(snapshot) {
+  if (!snapshot?.document?.store) return snapshot;
+  const BUILTIN_TEXT_SHAPES = new Set(['arrow', 'text', 'geo', 'line', 'note', 'frame', 'draw']);
+  const store = { ...snapshot.document.store };
+  for (const [id, record] of Object.entries(store)) {
+    if (record?.typeName !== 'shape') continue;
+    if (!BUILTIN_TEXT_SHAPES.has(record.type)) continue;
+    if (!record.props) continue;
+    const props = { ...record.props };
+    let changed = false;
+    // richText was a {type,value} object in v5 — extract plain text and move to `text`
+    if (props.richText !== undefined) {
+      if (typeof props.richText === 'object' && props.richText !== null) {
+        // v5 TipTap rich-text node: extract plain text from the paragraph nodes
+        try {
+          const paragraphs = props.richText?.content || [];
+          const plain = paragraphs
+            .flatMap(p => (p.content || []).map(n => n.text || ''))
+            .join('\n');
+          props.text = plain;
+        } catch {
+          props.text = '';
+        }
+      } else {
+        props.text = String(props.richText || '');
+      }
+      delete props.richText;
+      changed = true;
+    }
+    if (changed) {
+      store[id] = { ...record, props };
+    }
+  }
+  return {
+    ...snapshot,
+    document: { ...snapshot.document, store },
+  };
+}
+
 function drawDivider(editor, yTop, label) {
   editor.createShape({
     id: createShapeId(), type: 'arrow', x: 30, y: yTop,
-    props: { start: { x: 0, y: 0 }, end: { x: 1340, y: 0 }, color: 'grey', dash: 'dashed', size: 's', arrowheadStart: 'none', arrowheadEnd: 'none', richText: toRichText('') },
+    props: { start: { x: 0, y: 0 }, end: { x: 1340, y: 0 }, color: 'grey', dash: 'dashed', size: 's', arrowheadStart: 'none', arrowheadEnd: 'none', text: '' },
   });
   editor.createShape({
     id: createShapeId(), type: 'text', x: 30, y: yTop + 8,
-    props: { richText: toRichText(label), size: 's', font: 'sans', color: 'grey', w: 1000, autoSize: false, textAlign: 'start' },
+    props: { text: label, size: 's', font: 'sans', color: 'grey', w: 1000, autoSize: false, textAlign: 'start' },
   });
 }
 
@@ -199,6 +241,25 @@ export default function App() {
   }, [isPlaying, sessionId]);
 
   const handleMount = useCallback((editor) => {
+    // One-time wipe of any stale tldraw v5 IndexedDB data so v2 starts clean.
+    // Guarded by a localStorage flag so it only runs once per browser.
+    if (!localStorage.getItem('tldraw_v2_clean')) {
+      if (typeof indexedDB !== 'undefined' && indexedDB.databases) {
+        indexedDB.databases().then(dbs => {
+          dbs.forEach(db => {
+            if (db.name && (
+              db.name.startsWith('TLDRAW_DOCUMENT_') ||
+              db.name.startsWith('TLDRAW_ASSET_STORE_') ||
+              db.name.startsWith('TLDRAW_DB_NAME_INDEX_')
+            )) {
+              indexedDB.deleteDatabase(db.name);
+            }
+          });
+        }).catch(() => {});
+      }
+      localStorage.setItem('tldraw_v2_clean', '1');
+    }
+
     editorRef.current = editor;
     editor.setCamera({ x: 0, y: 0, z: 0.75 });
     setEditorReady(true);
@@ -311,7 +372,7 @@ export default function App() {
       if (data.canvasSnapshot) {
         const editor = editorRef.current;
         if (!editor) return;
-        editor.loadSnapshot(data.canvasSnapshot);
+        editor.loadSnapshot(sanitizeSnapshot(data.canvasSnapshot));
         if (data.prompts?.length) {
           const last = data.prompts[data.prompts.length - 1];
           yOffsetRef.current    = (last.yOffset ?? 0) + SESSION_STRIDE;
@@ -1050,7 +1111,11 @@ export default function App() {
         {/* ── CANVAS ── */}
         <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
           <CanvasGlow />
-          <Tldraw colorScheme="dark" shapeUtils={customShapeUtils} onMount={handleMount} />
+          <Tldraw
+            colorScheme="dark"
+            shapeUtils={customShapeUtils}
+            onMount={handleMount}
+          />
           {loading && (
             <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 18px', borderRadius: '999px', background: 'rgba(13,13,15,0.9)', border: '1px solid rgba(124,106,247,0.3)', backdropFilter: 'blur(12px)' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#a78bfa', animation: 'aiDot 0.8s ease-in-out infinite', display: 'inline-block' }} />
