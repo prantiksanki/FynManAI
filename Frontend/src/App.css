@@ -229,6 +229,9 @@ html, body, #root {
 /* Hide tldraw's own grid lines so only our dot pattern shows */
 .tl-grid { display: none !important; }
 
+/* Hide tldraw status bar ("select.idle" etc.) */
+.tlui-debug-panel { display: none !important; }
+
 /* Custom card shapes: remove default browser styles leaking into HTMLContainer */
 .tl-html-container {
   overflow: visible;

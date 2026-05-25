@@ -1,4 +1,4 @@
-import { createShapeId, AssetRecordType, toRichText } from 'tldraw';
+import { createShapeId, AssetRecordType } from 'tldraw';
 import { getImage } from '../services/imageCache';
 import { voiceEngine } from '../services/voiceEngine';
 
@@ -16,7 +16,7 @@ export function buildTimeline(actions) {
 }
 
 function rt(plain) {
-  return toRichText(plain || '');
+  return plain || '';
 }
 
 const COLOR_TOKENS = new Set([
@@ -157,7 +157,7 @@ export async function executeAction(editor, action, onVoice) {
               arrowheadEnd:   'arrow',
               arrowheadStart: 'none',
               size: 's',
-              richText: rt(''),
+              text: rt(''),
             },
           });
         }
@@ -216,7 +216,7 @@ export async function executeAction(editor, action, onVoice) {
           props: {
             start: { x: 0, y: 0 },
             end:   { x: to.cx - offX - sx, y: to.cy - offY - sy },
-            richText:       edge.label ? rt(edge.label) : rt(''),
+            text:           edge.label ? rt(edge.label) : rt(''),
             color:          'light-violet',
             arrowheadEnd:   'arrow',
             arrowheadStart: 'none',
@@ -309,7 +309,7 @@ export async function executeAction(editor, action, onVoice) {
           color:    toColorToken(action.color || 'light-violet'),
           fill:     'semi',
           size:     'm',
-          richText: action.label ? rt(action.label) : rt(''),
+          text: action.label ? rt(action.label) : rt(''),
         },
       });
       break;
@@ -327,7 +327,7 @@ export async function executeAction(editor, action, onVoice) {
         id, type: 'text',
         x: pos.x, y: pos.y,
         props: {
-          richText:  rt(action.content || ''),
+          text:      rt(action.content || ''),
           size:      sizeMap[style] || 'm',
           font:      fontMap[style] || 'sans',
           color:     'white',
@@ -351,7 +351,7 @@ export async function executeAction(editor, action, onVoice) {
         props: {
           start:          { x: 0, y: 0 },
           end:            { x: to.x - from.x, y: to.y - from.y },
-          richText:       action.label ? rt(action.label) : rt(''),
+          text:           action.label ? rt(action.label) : rt(''),
           color:          'grey',
           size:           'm',
           arrowheadEnd:   'arrow',
@@ -411,7 +411,7 @@ export async function executeAction(editor, action, onVoice) {
         id, type: 'text',
         x: pos.x, y: pos.y,
         props: {
-          richText: rt(action.formula || ''),
+          text:     rt(action.formula || ''),
           size:     'xl',
           font:     'mono',
           color:    'white',
