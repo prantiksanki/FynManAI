@@ -13,6 +13,7 @@ import { useVoiceInput } from './hooks/useVoiceInput';
 import { useAuth } from './context/AuthContext';
 import './App.css';
 import { MorphingSpinner } from './components/ui/morphing-spinner';
+import { CanvasErrorBoundary } from './components/ui/CanvasErrorBoundary';
 
 const SESSION_STRIDE = 880;
 
@@ -1113,11 +1114,16 @@ export default function App() {
         {/* ── CANVAS ── */}
         <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
           <CanvasGlow />
+          <CanvasErrorBoundary>
           <Tldraw
             colorScheme="dark"
             shapeUtils={customShapeUtils}
             onMount={handleMount}
+            onError={(error) => {
+              console.error('[FynmanAI] Tldraw internal error:', error);
+            }}
           />
+          </CanvasErrorBoundary>
           {loading && (
             <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 18px', borderRadius: '999px', background: 'rgba(13,13,15,0.9)', border: '1px solid rgba(124,106,247,0.3)', backdropFilter: 'blur(12px)' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#a78bfa', animation: 'aiDot 0.8s ease-in-out infinite', display: 'inline-block' }} />

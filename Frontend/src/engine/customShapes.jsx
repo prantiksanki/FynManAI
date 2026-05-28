@@ -1001,7 +1001,7 @@ export class TimelineCardUtil extends BaseBoxShapeUtil {
   static type = 'timeline-card';
   static props = {
     title:     T.string,
-    milestones: T.arrayOf(T.object),  // [{date, label, done}]
+    milestones: T.arrayOf(T.jsonValue),  // [{date, label, done}]
     accent:    T.string,
     w:         T.number,
     h:         T.number,
@@ -1024,7 +1024,9 @@ export class TimelineCardUtil extends BaseBoxShapeUtil {
   component(shape) {
     const { title, milestones, accent: ac, w, h } = shape.props;
     const col = accent(ac);
-    const safe = Array.isArray(milestones) ? milestones.slice(0, 6) : [];
+    const safe = Array.isArray(milestones)
+      ? milestones.filter(m => m && typeof m === 'object').slice(0, 6)
+      : [];
 
     return (
       <HTMLContainer style={{
@@ -1039,7 +1041,7 @@ export class TimelineCardUtil extends BaseBoxShapeUtil {
         {/* Milestones */}
         <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 0 }}>
           {safe.map((m, i) => {
-            const done = !!m.done;
+            const done = !!(m?.done);
             const isLast = i === safe.length - 1;
             return (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
@@ -1059,8 +1061,8 @@ export class TimelineCardUtil extends BaseBoxShapeUtil {
 
                 {/* Text column */}
                 <div style={{ paddingBottom: isLast ? 0 : 10, flex: 1, overflow: 'hidden' }}>
-                  <div style={{ fontSize: 9, color: done ? col : C_TEXT_MUTED, fontWeight: 700, letterSpacing: '0.06em' }}>{m.date}</div>
-                  <div style={{ fontSize: 11, color: done ? C_TEXT : C_TEXT_MUTED, fontWeight: done ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.label}</div>
+                  <div style={{ fontSize: 9, color: done ? col : C_TEXT_MUTED, fontWeight: 700, letterSpacing: '0.06em' }}>{m?.date ?? ''}</div>
+                  <div style={{ fontSize: 11, color: done ? C_TEXT : C_TEXT_MUTED, fontWeight: done ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m?.label ?? ''}</div>
                 </div>
               </div>
             );
@@ -1158,7 +1160,7 @@ export class BadgeCardUtil extends BaseBoxShapeUtil {
   static type = 'badge-card';
   static props = {
     title:  T.string,
-    badges: T.arrayOf(T.object),   // [{label, accent}]
+    badges: T.arrayOf(T.jsonValue),   // [{label, accent}]
     w:      T.number,
     h:      T.number,
   };
@@ -1179,7 +1181,9 @@ export class BadgeCardUtil extends BaseBoxShapeUtil {
 
   component(shape) {
     const { title, badges, w, h } = shape.props;
-    const safe = Array.isArray(badges) ? badges.slice(0, 12) : [];
+    const safe = Array.isArray(badges)
+      ? badges.filter(b => b && typeof b === 'object').slice(0, 12)
+      : [];
 
     return (
       <HTMLContainer style={{
@@ -1472,7 +1476,7 @@ export class AvatarCardUtil extends BaseBoxShapeUtil {
   static type = 'avatar-card';
   static props = {
     title:   T.string,
-    members: T.arrayOf(T.object),  // [{name, accent, emoji?}]
+    members: T.arrayOf(T.jsonValue),  // [{name, accent, emoji?}]
     sub:     T.string,
     w:       T.number,
     h:       T.number,
@@ -1494,7 +1498,9 @@ export class AvatarCardUtil extends BaseBoxShapeUtil {
 
   component(shape) {
     const { title, members, sub, w, h } = shape.props;
-    const safe = Array.isArray(members) ? members.slice(0, 8) : [];
+    const safe = Array.isArray(members)
+      ? members.filter(m => m && typeof m === 'object').slice(0, 8)
+      : [];
     const AV_SIZE = 46;
     const OVERLAP = 14;
 
@@ -1523,8 +1529,8 @@ export class AvatarCardUtil extends BaseBoxShapeUtil {
         {/* Avatar row */}
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {safe.map((m, i) => {
-            const col = accent(m.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
-            const initials = (m.name || '?').slice(0, 2).toUpperCase();
+            const col = accent(m?.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
+            const initials = (m?.name || '?').slice(0, 2).toUpperCase();
             return (
               <div key={i} style={{
                 width: AV_SIZE, height: AV_SIZE,
@@ -1534,15 +1540,15 @@ export class AvatarCardUtil extends BaseBoxShapeUtil {
                 outline: `1.5px solid ${col}88`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 marginLeft: i === 0 ? 0 : -OVERLAP,
-                fontSize: m.emoji ? 22 : 14,
+                fontSize: m?.emoji ? 22 : 14,
                 fontWeight: 800,
-                color: m.emoji ? undefined : col,
+                color: m?.emoji ? undefined : col,
                 boxShadow: `0 2px 10px rgba(0,0,0,0.5), 0 0 8px ${col}44`,
                 flexShrink: 0,
                 zIndex: safe.length - i,
                 transition: 'transform 0.2s ease',
               }}>
-                {m.emoji || initials}
+                {m?.emoji || initials}
               </div>
             );
           })}
@@ -1667,7 +1673,7 @@ export class StepCircleCardUtil extends BaseBoxShapeUtil {
   static type = 'step-circle-card';
   static props = {
     title:  T.string,
-    steps:  T.arrayOf(T.object),   // [{label, icon?, accent?}]
+    steps:  T.arrayOf(T.jsonValue),   // [{label, icon?, accent?}]
     w:      T.number,
     h:      T.number,
   };
@@ -1687,7 +1693,9 @@ export class StepCircleCardUtil extends BaseBoxShapeUtil {
 
   component(shape) {
     const { title, steps, w, h } = shape.props;
-    const safe   = Array.isArray(steps) ? steps.slice(0, 6) : [];
+    const safe   = Array.isArray(steps)
+      ? steps.filter(s => s && typeof s === 'object').slice(0, 6)
+      : [];
     const CIRC   = 52;
     const CONN_H = 2;
 
@@ -1731,8 +1739,8 @@ export class StepCircleCardUtil extends BaseBoxShapeUtil {
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center', gap: 1,
                 }}>
-                  <span style={{ fontSize: step.icon ? 18 : 14, lineHeight: 1 }}>{step.icon || String(i + 1)}</span>
-                  {!step.icon && (
+                  <span style={{ fontSize: step?.icon ? 18 : 14, lineHeight: 1 }}>{step?.icon || String(i + 1)}</span>
+                  {!step?.icon && (
                     <span style={{ fontSize: 8, color: col, fontWeight: 800 }}>{i + 1}</span>
                   )}
                 </div>
@@ -1753,13 +1761,13 @@ export class StepCircleCardUtil extends BaseBoxShapeUtil {
         {/* Labels row */}
         <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
           {safe.map((step, i) => {
-            const col = accent(step.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
+            const col = accent(step?.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
             return (
               <div key={i} style={{
                 width: CIRC, textAlign: 'center',
                 fontSize: 9, fontWeight: 700, color: col,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{step.label}</div>
+              }}>{step?.label ?? ''}</div>
             );
           })}
         </div>
@@ -1881,7 +1889,7 @@ export class EmojiStickerUtil extends BaseBoxShapeUtil {
 export class ReactionBubbleUtil extends BaseBoxShapeUtil {
   static type = 'reaction-bubble';
   static props = {
-    reactions: T.arrayOf(T.object),  // [{emoji, count, accent}]
+    reactions: T.arrayOf(T.jsonValue),  // [{emoji, count, accent}]
     w:         T.number,
     h:         T.number,
   };
@@ -1901,7 +1909,9 @@ export class ReactionBubbleUtil extends BaseBoxShapeUtil {
 
   component(shape) {
     const { reactions, w, h } = shape.props;
-    const safe = Array.isArray(reactions) ? reactions.slice(0, 8) : [];
+    const safe = Array.isArray(reactions)
+      ? reactions.filter(r => r && typeof r === 'object').slice(0, 8)
+      : [];
 
     return (
       <HTMLContainer style={{
@@ -1916,7 +1926,7 @@ export class ReactionBubbleUtil extends BaseBoxShapeUtil {
         pointerEvents: 'none',
       }}>
         {safe.map((r, i) => {
-          const col = accent(r.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
+          const col = accent(r?.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
           return (
             <div key={i} style={{
               display: 'flex',
@@ -1930,14 +1940,14 @@ export class ReactionBubbleUtil extends BaseBoxShapeUtil {
               backdropFilter: 'blur(4px)',
               cursor: 'default',
             }}>
-              <span style={{ fontSize: 16, lineHeight: 1 }}>{r.emoji}</span>
+              <span style={{ fontSize: 16, lineHeight: 1 }}>{r?.emoji ?? ''}</span>
               <span style={{
                 fontSize: 11, fontWeight: 800,
                 color: col,
                 letterSpacing: '-0.2px',
                 fontFamily: FONT_DISPLAY,
               }}>
-                {typeof r.count === 'number' ? r.count.toLocaleString() : r.count}
+                {typeof r?.count === 'number' ? r.count.toLocaleString() : (r?.count ?? '')}
               </span>
             </div>
           );
@@ -1957,7 +1967,7 @@ export class EmojiCloudUtil extends BaseBoxShapeUtil {
   static type = 'emoji-cloud';
   static props = {
     title: T.string,
-    items: T.arrayOf(T.object),   // [{emoji, label, size, accent}]
+    items: T.arrayOf(T.jsonValue),   // [{emoji, label, size, accent}]
     accent: T.string,
     w:      T.number,
     h:      T.number,
@@ -1982,7 +1992,9 @@ export class EmojiCloudUtil extends BaseBoxShapeUtil {
   component(shape) {
     const { title, items, accent: ac, w, h } = shape.props;
     const col  = accent(ac);
-    const safe = Array.isArray(items) ? items.slice(0, 10) : [];
+    const safe = Array.isArray(items)
+      ? items.filter(i => i && typeof i === 'object').slice(0, 10)
+      : [];
 
     const FONT_SIZES = { sm: 22, md: 32, lg: 44 };
 
@@ -2020,8 +2032,8 @@ export class EmojiCloudUtil extends BaseBoxShapeUtil {
           overflow: 'hidden',
         }}>
           {safe.map((item, i) => {
-            const icol   = accent(item.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
-            const fSize  = FONT_SIZES[item.size || 'md'] || 32;
+            const icol   = accent(item?.accent || LEVEL_ACCENTS[i % LEVEL_ACCENTS.length]);
+            const fSize  = FONT_SIZES[item?.size || 'md'] || 32;
             const delay  = (i * 0.18).toFixed(2);
             return (
               <div key={i} style={{
@@ -2041,9 +2053,9 @@ export class EmojiCloudUtil extends BaseBoxShapeUtil {
                   filter: `drop-shadow(0 2px 8px ${icol}55)`,
                   userSelect: 'none',
                 }}>
-                  {item.emoji}
+                  {item?.emoji ?? ''}
                 </span>
-                {item.label && (
+                {item?.label && (
                   <span style={{
                     fontSize: 8, fontWeight: 700,
                     color: icol,
