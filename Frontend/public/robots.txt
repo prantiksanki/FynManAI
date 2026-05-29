@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block authenticated-only routes from indexing
+Disallow: /dashboard
+Disallow: /canvas
+
+Sitemap: https://fynman.xyz/sitemap.xml

@@ -28,6 +28,8 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
   'http://localhost:4173',
   'https://fynmanai.onrender.com',
+  'https://fynman.xyz',
+  'https://www.fynman.xyz',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 app.use(cors({
