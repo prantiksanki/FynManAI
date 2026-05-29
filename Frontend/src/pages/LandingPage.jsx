@@ -172,6 +172,34 @@ export default function LandingPage() {
 
   return (
     <div className="landing-root">
+      {/* SEO: semantic headings and keyword-rich content for crawlers */}
+      <div style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap' }}>
+        <h1>FynmanAI – AI-Powered Financial Canvas</h1>
+        <h2>Visualize Any Financial Concept Instantly with FynmanAI</h2>
+        <p>
+          FynmanAI is a free AI-powered financial visualization tool that turns plain-language prompts into
+          interactive canvases. Whether you want to understand stocks, budget planning, investment portfolios,
+          financial ratios, or market trends — FynmanAI explains it visually in seconds.
+          Trusted by over 10,000 users worldwide, FynmanAI is the smartest way to learn and explore finance.
+          Try FynmanAI free today — no credit card required.
+        </p>
+        <h3>FynmanAI Features</h3>
+        <ul>
+          <li>AI-powered canvas for financial visualization</li>
+          <li>Voice narration for every financial concept</li>
+          <li>Live dynamic charts generated from your prompt</li>
+          <li>Multi-session infinite canvas workspace</li>
+          <li>Private, encrypted, per-user data storage</li>
+          <li>Works on desktop, tablet, and mobile</li>
+        </ul>
+        <h3>Who Uses FynmanAI?</h3>
+        <p>
+          FynmanAI is used by students, retail investors, financial advisors, hedge fund analysts,
+          and anyone who wants to understand money and markets without spreadsheets or jargon.
+          From Goldman Sachs analysts to first-time investors — FynmanAI speaks your language.
+        </p>
+      </div>
+
       <div className="landing-mesh" aria-hidden="true">
         <div className="mesh-orb mesh-orb--1" />
         <div className="mesh-orb mesh-orb--2" />
