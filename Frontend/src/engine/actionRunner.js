@@ -46,6 +46,10 @@ const ACCENT_TO_ARROW = {
 const PROCESS_ACCENTS = ['violet', 'blue', 'green', 'orange', 'teal', 'pink', 'yellow'];
 const NODE_ACCENTS    = ['violet', 'blue', 'green', 'orange', 'teal', 'pink'];
 
+// Tracks the placeholder shape created for each Manim job so it can be replaced
+// by the finished video (or removed on failure) once the render completes.
+const manimShapeByJob = new Map();
+
 export async function executeAction(editor, action, onVoice) {
   const { action: type } = action;
 
@@ -316,6 +320,81 @@ export async function executeAction(editor, action, onVoice) {
           w: sz.w, h: sz.h,
         },
       });
+      break;
+    }
+
+    // ── Manim: rendering placeholder ──────────────────────────────────────────
+    // Uses a built-in dashed geo rectangle so no custom shape registration is
+    // required; it is swapped for a video-card once the render finishes.
+    case 'manimPlaceholder': {
+      const pos = action.position || { x: 480, y: 560 };
+      const sz  = action.size    || { w: 420, h: 240 };
+      const shapeId = createShapeId();
+      manimShapeByJob.set(action.jobId, shapeId);
+
+      editor.createShape({
+        id: shapeId,
+        type: 'geo',
+        x: pos.x, y: pos.y,
+        props: {
+          geo:   'rectangle',
+          w: sz.w, h: sz.h,
+          color: 'light-violet',
+          fill:  'semi',
+          dash:  'dashed',
+          size:  's',
+          text:  rt(`🎬 Rendering animation…\n${action.label || ''}`),
+        },
+      });
+      break;
+    }
+
+    // ── Manim: swap placeholder for the rendered video ────────────────────────
+    case 'manimVideo': {
+      if (!action.url) break;
+      const placeholderId = manimShapeByJob.get(action.jobId);
+      const existing = placeholderId ? editor.getShape(placeholderId) : null;
+
+      const pos = existing
+        ? { x: existing.x, y: existing.y }
+        : (action.position || { x: 480, y: 560 });
+      const sz  = action.size || { w: 420, h: 240 };
+
+      if (placeholderId) {
+        editor.deleteShape(placeholderId);
+        manimShapeByJob.delete(action.jobId);
+      }
+
+      editor.createShape({
+        id: createShapeId(),
+        type: 'video-card',
+        x: pos.x, y: pos.y,
+        props: {
+          url:       action.url,
+          thumbnail: '',
+          title:     action.label || 'Manim animation',
+          duration:  0,
+          source:    'manim',
+          w: sz.w, h: sz.h,
+        },
+      });
+      break;
+    }
+
+    // ── Manim: render failed / timed out — mark the placeholder ───────────────
+    case 'manimError': {
+      const placeholderId = manimShapeByJob.get(action.jobId);
+      if (placeholderId) {
+        const existing = editor.getShape(placeholderId);
+        if (existing) {
+          editor.updateShape({
+            id: placeholderId,
+            type: 'geo',
+            props: { ...existing.props, color: 'light-red', text: rt('⚠ Animation unavailable') },
+          });
+        }
+        manimShapeByJob.delete(action.jobId);
+      }
       break;
     }
 

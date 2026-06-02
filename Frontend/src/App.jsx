@@ -7,6 +7,8 @@ import 'tldraw/tldraw.css';
 import { useCanvasGeneration } from './hooks/useCanvasGeneration';
 import { customShapeUtils } from './engine/customShapes';
 import { useTimelineOrchestrator } from './hooks/useTimelineOrchestrator';
+import { useManimSandbox } from './hooks/useManimSandbox';
+import { useReportSandbox } from './hooks/useReportSandbox';
 import { offsetTimeline } from './hooks/useCanvasOffset';
 import { voiceEngine } from './services/voiceEngine';
 import { useVoiceInput } from './hooks/useVoiceInput';
@@ -217,6 +219,8 @@ export default function App() {
   }, []);
 
   const { runTimeline, stop, isPlaying, progress } = useTimelineOrchestrator(editorRef, handleVoice);
+  const manim = useManimSandbox();
+  const report = useReportSandbox();
 
   // When playback finishes, flush narration and capture canvas snapshot
   const prevIsPlayingRef = useRef(false);
@@ -322,7 +326,27 @@ export default function App() {
 
     if (sessionId && sessionId !== 'new') shouldSnapshotRef.current = true;
     runTimeline(shiftedTimeline);
-  }, [generate, runTimeline, stop, sessionId, conversationHistory]);
+
+    // In parallel: render a real Manim explainer video for math/physics topics
+    // and drop it into the canvas when ready. Does NOT block the timeline; no-ops
+    // if the backend sandbox is disabled (MANIM_ENABLED=false).
+    if (result.intent === 'math' || result.intent === 'physics') {
+      manim.start(prompt, {
+        editorRef,
+        slot: { pos: { x: 1200, y: yOffset + 150 }, size: { w: 380, h: 260 } },
+      });
+    }
+
+    // Auto-detect a request for a downloadable PDF report and generate one in
+    // parallel; the link is surfaced as a chat message when ready.
+    if (/\b(report|pdf|export|downloadable|document|whitepaper|brief|dossier)\b/i.test(prompt)) {
+      report.start(prompt, {
+        onStart: () => setChatMessages(prev => [...prev, { role: 'ai', text: '📄 Generating your PDF report…' }]),
+        onReady: (url) => setChatMessages(prev => [...prev, { role: 'ai', text: 'Your PDF report is ready.', fileUrl: url }]),
+        onError: () => setChatMessages(prev => [...prev, { role: 'ai', text: '⚠ Report generation failed.' }]),
+      });
+    }
+  }, [generate, runTimeline, stop, sessionId, conversationHistory, manim, report]);
 
   const replaySession = useCallback(async (prompts) => {
     for (const entry of prompts) {
@@ -408,7 +432,7 @@ export default function App() {
   }, [editorReady, initialPrompt, handleSubmit]);
 
   const handleClear = useCallback(() => {
-    stop(); voiceEngine.stop(); setCurrentVoice(''); setSessionResult(null);
+    stop(); manim.stop(); report.stop(); voiceEngine.stop(); setCurrentVoice(''); setSessionResult(null);
     sessionNumRef.current = 0; yOffsetRef.current = 0;
     narrationBufRef.current = [];
     setChatMessages([]);
@@ -418,16 +442,16 @@ export default function App() {
     const allIds = editor.getCurrentPageShapeIds();
     if (allIds.size > 0) editor.deleteShapes([...allIds]);
     editor.setCamera({ x: 0, y: 0, z: 0.75 });
-  }, [stop]);
+  }, [stop, manim, report]);
 
   const handleStop = useCallback(() => {
-    stop(); voiceEngine.stop(); setCurrentVoice('');
+    stop(); manim.stop(); report.stop(); voiceEngine.stop(); setCurrentVoice('');
     narrationBufRef.current = [];
-  }, [stop]);
+  }, [stop, manim, report]);
 
   const handleLogout = useCallback(() => {
-    stop(); voiceEngine.stop(); logout(); navigate('/');
-  }, [stop, logout, navigate]);
+    stop(); manim.stop(); report.stop(); voiceEngine.stop(); logout(); navigate('/');
+  }, [stop, manim, report, logout, navigate]);
 
   function handleKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -968,6 +992,21 @@ export default function App() {
                       }}>
                         {msg.text}
                       </div>
+                      {msg.fileUrl && (
+                        <a
+                          href={msg.fileUrl} target="_blank" rel="noreferrer" download
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '6px',
+                            marginTop: '2px', padding: '7px 12px', borderRadius: '9px',
+                            background: 'linear-gradient(135deg,rgba(124,106,247,0.18),rgba(80,160,255,0.12))',
+                            border: '1px solid rgba(124,106,247,0.35)', color: '#c4b6ff',
+                            fontSize: '12px', fontWeight: 600, textDecoration: 'none', width: 'fit-content',
+                          }}
+                        >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                          Download PDF
+                        </a>
+                      )}
                     </div>
                   )}
                 </div>

@@ -7,6 +7,7 @@ const MODEL = 'anthropic/claude-haiku-4-5';
 function detectIntent(prompt) {
   const p = prompt.toLowerCase();
   if (/\b(theorem|formula|equation|pythagoras|algebra|calculus|geometry|trig|derivative|integral|matrix|vector|proof|math|triangle|hypotenuse|sine|cosine|logarithm|fibonacci|prime)\b/.test(p)) return 'math';
+  if (/\b(physics|force|velocity|acceleration|momentum|gravity|wave|projectile|newton|orbit|kinetic|potential|friction|pendulum|oscillation)\b/.test(p)) return 'physics';
   if (/\b(kubernetes|docker|api|microservice|algorithm|code|program|function|class|database|sql|graphql|server|deploy|devops|git|react|node|python|java|javascript|architecture|connect|driver|orm|query)\b/.test(p)) return 'coding';
   if (/\b(sad|happy|anxious|stressed|depressed|lonely|overwhelmed|angry|scared|worried|excited|love|miss|hurt|cry|feel|emotion)\b/.test(p)) return 'emotional';
   if (/\b(stock|chart|portfolio|budget|compound|interest|investment|finance|financial|expense|income|profit|loss|dividend|equity|bond|fund|asset|liability|cash flow|balance sheet|p&l|roi|irr|npv|forex|crypto|trading|market trend|revenue flow|budget breakdown)\b/.test(p)) return 'finance';
@@ -263,6 +264,7 @@ drawArrow from x:330,y:250 to x:1070,y:250 as the route connector.
 function getLayout(intent) {
   switch (intent) {
     case 'math':     return getMathLayout();
+    case 'physics':  return getMathLayout();
     case 'coding':   return getCodingLayout();
     case 'emotional':return getEmotionalLayout();
     case 'business': return getBusinessLayout();
@@ -383,7 +385,7 @@ CRITICAL: Detect the language of the user's message and respond ENTIRELY in that
 4. createNodeGraph: list nodes with id+label+sublabel, edges with from/to/label. Backend handles layout.
 5. drawProcessRow steps: each step needs label, body (1 sentence), accent color, step number.
 6. insertImage query: a specific real landmark, person, or object name (e.g. "Eiffel Tower Paris" not "city"). Always in English (image search query).
-7. ${intent === 'math' || intent === 'finance'
+7. ${intent === 'math' || intent === 'finance' || intent === 'physics'
     ? 'FORBIDDEN: do not use insertImage or insertVideo — use drawTableCard, drawFeatureCard, and createNodeGraph only.'
     : intent === 'story' || intent === 'emotional' || intent === 'travel'
       ? 'Use insertVideo for image slots (1–2 actions max). Use descriptive scene queries (e.g. "calm forest stream", "crowded market street"). You may also use insertImage. Prefer insertVideo over insertImage for act/emotional/travel image slots.'
@@ -478,7 +480,7 @@ async function generateCanvasTimeline(req, res) {
       return res.status(500).json({ error: 'Invalid timeline structure' });
     }
 
-    if (intent === 'math' || intent === 'finance') {
+    if (intent === 'math' || intent === 'finance' || intent === 'physics') {
       parsed.timeline = parsed.timeline.filter(
         a => a.action !== 'insertImage' && a.action !== 'insertVideo'
       );

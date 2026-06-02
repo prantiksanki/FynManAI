@@ -1,3 +1,13 @@
 node_modules
 .env
 
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+
+# Generated sandbox output (runtime artifacts)
+Backend/public/manim-video/
+Backend/public/report-file/
+Backend/public/tts-audio/

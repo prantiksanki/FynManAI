@@ -9,6 +9,8 @@ const { generateCanvasTimeline } = require('./controller/canvasController');
 const { fetchImage } = require('./controller/imageController');
 const { fetchVideo } = require('./controller/videoController');
 const { generateTts } = require('./controller/ttsController');
+const { renderManim, manimStatus } = require('./controller/manimController');
+const { renderReport, reportStatus } = require('./controller/reportController');
 const {
   createSession, listSessions, getSession, updateSession, deleteSession, saveSnapshot,
 } = require('./controller/sessionController');
@@ -22,6 +24,7 @@ console.log('[FinAI] Env check:',
   'OPENROUTER_API_KEY:', process.env.OPENROUTER_API_KEY ? '✓ set' : '✗ MISSING',
   '| MONGODB_URI:', process.env.MONGODB_URI ? '✓ set' : '✗ not set (sessions disabled)',
   '| FRONTEND_URL:', process.env.FRONTEND_URL || '(using hardcoded default)',
+  '| MANIM_ENABLED:', String(process.env.MANIM_ENABLED).toLowerCase() === 'true' ? '✓ on' : '✗ off',
 );
 
 const ALLOWED_ORIGINS = [
@@ -40,6 +43,9 @@ app.use(cors({
 }));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use('/tts-audio', express.static(path.join(__dirname, 'public', 'tts-audio')));
+// Served under /api so the Vite '/api' dev proxy reaches it without extra config.
+app.use('/api/manim-video', express.static(path.join(__dirname, 'public', 'manim-video')));
+app.use('/api/report-file', express.static(path.join(__dirname, 'public', 'report-file')));
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', model: 'gemini-2.0-flash' }));
@@ -49,6 +55,14 @@ app.post('/api/canvas/generate', generateCanvasTimeline);
 
 // TTS generation
 app.post('/api/tts', generateTts);
+
+// Manim sandbox (async render job + status polling)
+app.post('/api/manim/render',        renderManim);
+app.get('/api/manim/status/:jobId',  manimStatus);
+
+// Report sandbox (async PDF generation + status polling)
+app.post('/api/report/render',       renderReport);
+app.get('/api/report/status/:jobId', reportStatus);
 
 // Image proxy
 app.get('/api/image/fetch', fetchImage);

@@ -50,3 +50,33 @@ export async function saveSnapshotApi(sessionId, snapshot) {
   await api.put(`/sessions/${sessionId}/snapshot`, { snapshot });
 }
 
+// ── Manim sandbox (async job model) ──────────────────────────────────────────
+// Renders take 10–60s+ (longer than the axios timeout), so we kick off a job and
+// poll its status. videoUrl comes back as '/api/manim-video/<file>'; prefix with
+// BASE to build an absolute <video> src that points at the backend.
+export async function renderManim(topic) {
+  const { data } = await api.post('/manim/render', { topic });
+  return data;                       // { jobId, status }
+}
+
+export async function getManimStatus(jobId) {
+  const { data } = await api.get(`/manim/status/${jobId}`);
+  return data;                       // { status, videoUrl?, error? }
+}
+
+// ── Report sandbox (async PDF generation) ────────────────────────────────────
+// fileUrl comes back as '/api/report-file/<file>.pdf'; prefix with BASE for an
+// absolute download link.
+export async function renderReport(query) {
+  const { data } = await api.post('/report/render', { query });
+  return data;                       // { jobId, status }
+}
+
+export async function getReportStatus(jobId) {
+  const { data } = await api.get(`/report/status/${jobId}`);
+  return data;                       // { status, fileUrl?, error? }
+}
+
+// Backend origin — exported so callers can build absolute MP4 / PDF URLs.
+export { BASE };
+
