@@ -1,0 +1,10 @@
+# Kaggle credentials — never commit
+kaggle.json
+.env
+
+# data & artifacts
+data/
+submissions/*.csv
+submissions/*.log
+__pycache__/
+*.pyc
