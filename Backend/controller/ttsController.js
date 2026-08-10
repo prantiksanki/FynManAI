@@ -1,17 +1,13 @@
-const { spawn } = require('child_process');
 const path = require('path');
 const fs   = require('fs');
+const axios = require('axios');
 
 const AUDIO_DIR = path.join(__dirname, '..', 'public', 'tts-audio');
 fs.mkdirSync(AUDIO_DIR, { recursive: true });
 
-// Python 3.13 is the version that has gTTS installed on this machine.
-// We try the py launcher first (works from any shell), then fall back to
-// the absolute path so the Node child_process spawn always finds it.
-const PY_CANDIDATES = [
-  { cmd: 'py', args: ['-3.13'] },
-  { cmd: 'C:\\Users\\Prantik sanki\\AppData\\Local\\Programs\\Python\\Python313\\python.exe', args: [] },
-];
+const OPENAI_TTS_URL = 'https://api.openai.com/v1/audio/speech';
+const OPENAI_TTS_MODEL = 'gpt-4o-mini-tts';
+const OPENAI_TTS_VOICE = 'alloy';
 
 // Delete MP3 files older than 1 hour — fire-and-forget, never throws
 function pruneOldFiles() {
@@ -28,53 +24,48 @@ function pruneOldFiles() {
   } catch (_) {}
 }
 
-function spawnPython(scriptArgs) {
-  for (const { cmd, args } of PY_CANDIDATES) {
-    try {
-      const proc = spawn(cmd, [...args, ...scriptArgs]);
-      return proc;
-    } catch (_) {}
-  }
-  throw new Error('No usable Python 3.13 found');
-}
-
-exports.generateTts = (req, res) => {
-  const { text } = req.body;
+exports.generateTts = async (req, res) => {
+  const { text, voice } = req.body;
   if (!text?.trim()) return res.status(400).json({ error: 'text is required' });
 
-  // gTTS silently truncates at ~5000 chars; hard-cap here too
-  const safe = text.trim().slice(0, 5000);
+  const apiKey = process.env.OPENAI_KEY;
+  if (!apiKey) {
+    console.error('[TTS] OPENAI_KEY is not set');
+    return res.status(500).json({ error: 'TTS is not configured' });
+  }
+
+  // OpenAI TTS caps input at 4096 characters
+  const safe = text.trim().slice(0, 4096);
 
   pruneOldFiles();
 
-  let py;
   try {
-    py = spawnPython([
-      path.join(__dirname, '..', 'tts_worker.py'),
-      safe,
-      AUDIO_DIR,
-    ]);
-  } catch (err) {
-    console.error('[TTS] spawn error:', err.message);
-    return res.status(500).json({ error: 'Failed to start TTS process' });
-  }
+    const response = await axios.post(
+      OPENAI_TTS_URL,
+      {
+        model: OPENAI_TTS_MODEL,
+        input: safe,
+        voice: voice || OPENAI_TTS_VOICE,
+        response_format: 'mp3',
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        responseType: 'arraybuffer',
+      }
+    );
 
-  let filename = '';
-  let errOut   = '';
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.mp3`;
+    fs.writeFileSync(path.join(AUDIO_DIR, filename), response.data);
 
-  py.stdout.on('data', (d) => { filename += d.toString().trim(); });
-  py.stderr.on('data', (d) => { errOut   += d.toString(); });
-
-  py.on('close', (code) => {
-    if (code !== 0 || !filename) {
-      console.error('[TTS] Python exit', code, errOut);
-      return res.status(500).json({ error: 'TTS generation failed', detail: errOut });
-    }
     res.json({ audioUrl: `/tts-audio/${filename}` });
-  });
-
-  py.on('error', (err) => {
-    console.error('[TTS] process error:', err.message);
-    if (!res.headersSent) res.status(500).json({ error: 'Failed to start TTS process' });
-  });
+  } catch (err) {
+    const detail = err.response?.data
+      ? Buffer.from(err.response.data).toString('utf8')
+      : err.message;
+    console.error('[TTS] OpenAI request failed:', detail);
+    res.status(500).json({ error: 'TTS generation failed', detail });
+  }
 };
