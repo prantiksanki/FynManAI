@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback } from 'react';
 import { buildTimeline, executeAction } from '../engine/actionRunner';
+import { voiceEngine } from '../services/voiceEngine';
 
 export function useTimelineOrchestrator(editorRef, onVoice) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,6 +27,12 @@ export function useTimelineOrchestrator(editorRef, onVoice) {
       used[a._ms] = true;
     });
     setProgress({ current: 0, total: timeline.length });
+
+    // Kick off TTS fetches for every narration line now, in parallel, so each
+    // one is normally already downloaded by the time its setTimeout fires.
+    timeline.forEach(a => {
+      if (a.action === 'voice' && a.content) voiceEngine.prefetch(a.content);
+    });
 
     // Return a real Promise that resolves only when the last action fires,
     // so callers can properly `await runTimeline(...)` in sequence.

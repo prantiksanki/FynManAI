@@ -278,6 +278,7 @@ export default function App() {
 
     stop();
     voiceEngine.stop();
+    voiceEngine.unlock();
 
     // Add user message to chat
     setChatMessages(prev => [...prev, { role: 'user', text: prompt }]);
