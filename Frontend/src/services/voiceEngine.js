@@ -1,62 +1,58 @@
-// Web Speech API TTS engine — singleton, event-driven
-// Gracefully degrades when Web Speech API is unavailable (some browsers/contexts)
+// OpenAI TTS engine — singleton, event-driven
+// Fetches narration audio from the backend (/api/tts) and plays it via <audio>.
+import { generateTtsApi, resolveTtsUrl } from './canvasApi';
+
 class VoiceEngine {
   constructor() {
-    this.synth = (typeof window !== 'undefined' && window.speechSynthesis) || null;
-    this.voice = null;
-    this.rate = 0.95;
-    this.pitch = 1.0;
+    this.audio = (typeof window !== 'undefined') ? new Audio() : null;
     this.volume = 1.0;
-    this._ready = false;
-    this._queue = [];
-    if (this.synth) this._init();
-  }
+    this._token = 0; // guards against a stale fetch resolving after a newer speak()/stop()
 
-  _init() {
-    const load = () => {
-      const voices = this.synth.getVoices();
-      // Prefer a natural English voice
-      this.voice =
-        voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) ||
-        voices.find(v => v.lang.startsWith('en-US')) ||
-        voices[0] || null;
-      this._ready = true;
-    };
-
-    try {
-      if (this.synth.getVoices().length > 0) {
-        load();
-      } else {
-        this.synth.addEventListener('voiceschanged', load, { once: true });
-      }
-    } catch (e) {
-      // Speech API unavailable — voice narration silently disabled
+    if (this.audio) {
+      this.audio.volume = this.volume;
     }
   }
 
-  speak(text, onEnd) {
-    if (!text || !this.synth) { onEnd?.(); return; }
+  async speak(text, onEnd) {
+    if (!text || !this.audio) { onEnd?.(); return; }
+
+    const myToken = ++this._token;
+    this._stopPlayback();
+
     try {
-      this.synth.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      if (this.voice) utterance.voice = this.voice;
-      utterance.rate = this.rate;
-      utterance.pitch = this.pitch;
-      utterance.volume = this.volume;
-      utterance.onend = () => onEnd?.();
-      utterance.onerror = () => onEnd?.();
-      this.synth.speak(utterance);
+      const { audioUrl } = await generateTtsApi(text);
+      if (myToken !== this._token) { onEnd?.(); return; } // superseded by a newer call
+
+      this.audio.src = resolveTtsUrl(audioUrl);
+      this.audio.volume = this.volume;
+      this.audio.onended = () => onEnd?.();
+      this.audio.onerror = () => onEnd?.();
+      await this.audio.play();
     } catch (e) {
-      onEnd?.();
+      if (myToken === this._token) onEnd?.();
     }
+  }
+
+  _stopPlayback() {
+    try {
+      this.audio.onended = null;
+      this.audio.onerror = null;
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    } catch (e) { /* ignore */ }
   }
 
   stop() {
-    try { this.synth?.cancel(); } catch (e) { /* ignore */ }
+    this._token++; // invalidate any in-flight fetch
+    if (!this.audio) return;
+    this._stopPlayback();
   }
 
-  setRate(r) { this.rate = r; }
-  setVolume(v) { this.volume = v; }
+  setRate() { /* no-op: OpenAI TTS speed is fixed server-side */ }
+  setVolume(v) {
+    this.volume = v;
+    if (this.audio) this.audio.volume = v;
+  }
 }
 
 export const voiceEngine = new VoiceEngine();

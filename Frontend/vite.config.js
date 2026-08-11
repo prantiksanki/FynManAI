@@ -20,6 +20,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
+      '/tts-audio': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 })

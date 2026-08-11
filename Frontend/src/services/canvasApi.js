@@ -21,6 +21,16 @@ export async function fetchVideoUrl(query) {
   return data;
 }
 
+// ── Text-to-speech (OpenAI) ────────────────────────────────
+export async function generateTtsApi(text, voice) {
+  const { data } = await api.post('/tts', { text, voice });
+  return data; // { audioUrl }
+}
+
+export function resolveTtsUrl(audioUrl) {
+  return `${BASE}${audioUrl}`;
+}
+
 // ── Session CRUD ───────────────────────────────────────────
 export async function createSessionApi(userId, title) {
   const { data } = await api.post('/sessions', { userId, title });
