@@ -453,11 +453,15 @@ export function Footer({ onGetStarted }) {
 
             {/* Small links */}
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginTop: '4px' }}>
-              {['Privacy Policy', 'Terms of Service', 'Support'].map((label) => (
+              {[
+                { label: 'Privacy Policy', href: '/privacy' },
+                { label: 'Terms of Service', href: '/terms' },
+                { label: 'Support', href: 'mailto:support@fynman.xyz' },
+              ].map(({ label, href }) => (
                 <MagneticButton
                   key={label}
                   as="a"
-                  href="#"
+                  href={href}
                   className="fynmanai-glass-pill"
                   style={{
                     padding: '10px 22px',

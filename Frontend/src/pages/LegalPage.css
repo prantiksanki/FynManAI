@@ -1,0 +1,135 @@
+.legal-root {
+  position: relative;
+  min-height: 100vh;
+  background: #000000;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.legal-mesh {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.legal-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+}
+
+.legal-orb--1 {
+  width: 50vw;
+  height: 50vw;
+  top: -15%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.06), transparent 70%);
+}
+
+.legal-orb--2 {
+  width: 40vw;
+  height: 40vw;
+  bottom: -10%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.04), transparent 70%);
+}
+
+.legal-header {
+  position: relative;
+  z-index: 10;
+  padding: 24px 24px 0;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.legal-back {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  padding: 10px 0;
+  font-family: inherit;
+  transition: color 0.2s;
+}
+
+.legal-back:hover {
+  color: #ffffff;
+}
+
+.legal-container {
+  position: relative;
+  z-index: 10;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 120px;
+}
+
+.legal-container h1 {
+  font-size: clamp(32px, 6vw, 48px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.legal-updated {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0 0 48px;
+  letter-spacing: 0.02em;
+}
+
+.legal-section {
+  margin-bottom: 36px;
+}
+
+.legal-section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+}
+
+.legal-section p,
+.legal-section li {
+  font-size: 15px;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
+}
+
+.legal-section p {
+  margin: 0 0 12px;
+}
+
+.legal-section ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.legal-section li {
+  margin-bottom: 8px;
+}
+
+.legal-section li strong {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+}
+
+.legal-section a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal-section a:hover {
+  color: #ffffff;
+}
